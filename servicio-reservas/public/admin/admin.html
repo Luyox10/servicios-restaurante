@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Reservas - Admin</title>
+  <style>
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    h1 {
+      color: #8b0000;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.2rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .controles {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .controles input, .controles select, .controles button {
+      padding: 10px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    .controles input:focus, .controles select:focus {
+      outline: none;
+      border-color: #8b0000;
+      box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+    }
+    .controles button {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(139, 0, 0, 0.3);
+    }
+    .controles button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4);
+    }
+    .controles button[style*="background: #28a745"] {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+      box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+    }
+    .controles button[style*="background: #28a745"]:hover {
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+    }
+    .controles button.btn-ordenar {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      box-shadow: 0 2px 6px rgba(23, 162, 184, 0.3);
+    }
+    .controles button.btn-ordenar:hover {
+      box-shadow: 0 4px 12px rgba(23, 162, 184, 0.4);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      text-align: center;
+      color: white;
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .stat-card:nth-child(1) {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .stat-card:nth-child(2) {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    .stat-card:nth-child(3) {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    .stat-card:nth-child(4) {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    .stat-card h3 {
+      margin: 0 0 0.5rem 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-card .numero {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: white;
+      margin: 0.5rem 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      border-bottom: 1px solid #e8e8e8;
+      padding: 1rem;
+      text-align: left;
+    }
+    th {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+    tbody tr {
+      transition: all 0.3s ease;
+    }
+    tbody tr:hover {
+      background-color: #f8f9fa;
+      transform: scale(1.01);
+    }
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+    tr:nth-child(even):hover {
+      background-color: #f0f0f0;
+    }
+    .estado {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .estado.pendiente { background: #fff3cd; color: #856404; }
+    .estado.confirmada { background: #d4edda; color: #155724; }
+    .estado.cancelada { background: #f8d7da; color: #721c24; }
+    .estado.completada { background: #d1ecf1; color: #0c5460; }
+    .btn-accion {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 2px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .btn-accion:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .btn-confirmar { 
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+      color: white; 
+    }
+    .btn-cancelar { 
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); 
+      color: white; 
+    }
+    .btn-editar { 
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); 
+      color: black; 
+    }
+    .btn-detalles { 
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); 
+      color: white; 
+    }
+    .hoy {
+      background: #e7f3ff !important;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      animation: fadeIn 0.3s ease;
+    }
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      animation: slideDown 0.3s ease;
+      position: relative;
+    }
+    
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-content h2 {
+      color: #8b0000;
+      margin-top: 0;
+      border-bottom: 2px solid #8b0000;
+      padding-bottom: 10px;
+    }
+    
+    .modal-content span[style*="float: right"] {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+      transition: color 0.3s;
+    }
+    
+    .modal-content span[style*="float: right"]:hover {
+      color: #8b0000;
+    }
+    .platos-lista {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .plato-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .nav-header {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .nav-header-left {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .nav-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.8rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links a.active {
+      background-color: rgba(255, 255, 255, 0.4);
+      font-weight: bold;
+    }
+    
+    .user-icon-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 20px;
+    }
+    
+    .user-icon-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    
+    .user-icon-link:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .user-icon {
+      font-size: 24px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <div class="nav-header-left">
+      <h1>🍽️ La Mamasa - Administración</h1>
+      <nav class="nav-links">
+        <a href="http://localhost:3000/admin/admin.html">👤 Usuarios</a>
+        <a href="http://localhost:4000/admin/menu_admin.html">🍽️ Menú</a>
+        <a href="http://localhost:4001/admin">📦 Pedidos</a>
+        <a href="http://localhost:4002/admin/pagos.html">💳 Pagos</a>
+        <a href="http://localhost:4004/admin" class="active">📅 Reservas</a>
+      </nav>
+    </div>
+    <div class="user-icon-container">
+      <a href="http://localhost:3000/admin/admin.html" class="user-icon-link">
+        <span class="user-icon">👤</span>
+        <span>Admin</span>
+      </a>
+    </div>
+  </div>
+  <div class="container">
+    <h1>🍽️ Gestión de Reservas</h1>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <h3>Total Reservas</h3>
+        <div class="numero" id="total">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Hoy</h3>
+        <div class="numero" id="hoy">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Confirmadas</h3>
+        <div class="numero" id="confirmadas">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Pendientes</h3>
+        <div class="numero" id="pendientes">0</div>
+      </div>
+    </div>
+
+    <div class="controles">
+      <input type="date" id="fechaFiltro">
+      <select id="estadoFiltro">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendientes</option>
+        <option value="confirmada">Confirmadas</option>
+        <option value="cancelada">Canceladas</option>
+        <option value="completada">Completadas</option>
+      </select>
+      <select id="tipoFiltro">
+        <option value="">Todos los tipos</option>
+        <option value="desayuno">Desayuno</option>
+        <option value="almuerzo">Almuerzo</option>
+        <option value="cena">Cena</option>
+        <option value="merienda">Merienda</option>
+      </select>
+      <button onclick="cargarReservas()">🔍 Filtrar</button>
+      <button onclick="limpiarFiltros()">🔄 Limpiar</button>
+      <button onclick="cargarReservas()" title="Actualizar lista">🔄 Actualizar</button>
+      <button onclick="mostrarModalNuevaReserva()" style="background: #28a745;">➕ Nueva Reserva</button>
+      <button id="btn-ordenar-id" class="btn-ordenar" onclick="alternarOrdenamiento()">🔢 Ordenar por ID</button>
+    </div>
+
+    <div class="table-container">
+      <table id="tablaReservas">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Personas</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Detalles -->
+  <div id="modalDetalles" class="modal">
+    <div class="modal-content">
+      <span style="float: right; cursor: pointer; font-size: 24px;" onclick="cerrarModal()">&times;</span>
+      <h2>Detalles de Reserva</h2>
+      <div id="detallesContenido"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:4004/api/reservas';
+    
+    // Variable para controlar el ordenamiento por ID
+    let ordenAscendente = true;
+
+    // Cargar reservas
+    async function cargarReservas() {
+      try {
+        const fecha = document.getElementById('fechaFiltro').value;
+        const estado = document.getElementById('estadoFiltro').value;
+        const tipo = document.getElementById('tipoFiltro').value;
+
+        let url = API_BASE;
+        const params = new URLSearchParams();
+        
+        // Solo agregar filtro de fecha si está especificado
+        // Si no hay filtro, cargar todas las reservas
+        if (fecha) {
+          params.append('fecha', fecha);
+        }
+        if (estado) {
+          params.append('estado', estado);
+        }
+        
+        if (params.toString()) {
+          url += '?' + params.toString();
+        }
+
+        console.log('📅 Cargando reservas desde:', url);
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        let reservas = await response.json();
+        console.log('📅 Reservas recibidas:', reservas.length);
+
+        // Filtrar por tipo si es necesario
+        if (tipo) {
+          reservas = reservas.filter(r => r.tipo_reserva === tipo);
+        }
+
+        // No ordenar por fecha aquí, se ordenará por ID en mostrarReservas
+        mostrarReservas(reservas);
+        actualizarEstadisticas(reservas);
+        
+        // Mostrar notificación si hay reservas
+        if (reservas.length > 0) {
+          console.log(`✅ ${reservas.length} reservas cargadas correctamente`);
+        }
+      } catch (error) {
+        console.error('❌ Error cargando reservas:', error);
+        alert(`Error al cargar las reservas: ${error.message}`);
+      }
+    }
+
+    // Formatear fecha en zona horaria de Perú (para fecha_reserva)
+    function formatearFechaPeru(fecha) {
+      if (!fecha) return '-';
+      
+      try {
+        // MongoDB devuelve fechas en formato ISO (UTC)
+        // Necesitamos extraer la fecha original que se guardó
+        const date = new Date(fecha);
+        
+        // Cuando MongoDB guarda una fecha con timezone -05:00, la convierte a UTC
+        // Por ejemplo: 2024-11-20T00:00:00-05:00 se guarda como 2024-11-20T05:00:00Z
+        // Necesitamos revertir esto para mostrar la fecha correcta
+        
+        // Obtener la fecha en zona horaria de Perú
+        const fechaPeruStr = date.toLocaleString('en-US', { 
+          timeZone: 'America/Lima',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        
+        // Parsear la fecha formateada
+        const [month, day, year] = fechaPeruStr.split('/');
+        
+        return `${day}/${month}/${year}`;
+      } catch (error) {
+        console.error('Error formateando fecha:', error, fecha);
+        // Si hay error, intentar formatear directamente
+        const date = new Date(fecha);
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = date.getUTCFullYear();
+        return `${day}/${month}/${year}`;
+      }
+    }
+    
+    // Función para formatear la fecha (exactamente igual que en pedidos)
+    function formatearFecha(fecha) {
+      if (!fecha) return "Sin fecha";
+      const date = new Date(fecha);
+      if (isNaN(date.getTime())) return "Sin fecha";
+      return date.toLocaleDateString('es-PE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    // Obtener fecha como string YYYY-MM-DD desde fecha de MongoDB
+    function obtenerFechaString(fecha) {
+      if (!fecha) return '';
+      const date = new Date(fecha);
+      const fechaPeru = new Date(date.toLocaleString('en-US', { timeZone: 'America/Lima' }));
+      const year = fechaPeru.getFullYear();
+      const month = String(fechaPeru.getMonth() + 1).padStart(2, '0');
+      const day = String(fechaPeru.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Obtener fecha de hoy en zona horaria de Perú
+    function obtenerHoyPeru() {
+      const hoy = new Date();
+      const fechaPeruStr = hoy.toLocaleString('en-US', { 
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+      const [month, day, year] = fechaPeruStr.split('/');
+      return `${day}/${month}/${year}`;
+    }
+
+    // Función para ordenar reservas por ID
+    function ordenarPorId(reservas) {
+      const reservasOrdenadas = [...reservas];
+      reservasOrdenadas.sort((a, b) => {
+        // Usar los primeros 8 caracteres del _id para ordenar
+        const idA = a._id.substring(0, 8);
+        const idB = b._id.substring(0, 8);
+        return ordenAscendente ? idA.localeCompare(idB) : idB.localeCompare(idA);
+      });
+      return reservasOrdenadas;
+    }
+
+    // Mostrar reservas en tabla
+    function mostrarReservas(reservas) {
+      const tbody = document.querySelector('#tablaReservas tbody');
+      tbody.innerHTML = '';
+
+      if (reservas.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 3rem; color: #999;">
+              No hay reservas disponibles
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      // Ordenar por ID antes de mostrar
+      const reservasOrdenadas = ordenarPorId(reservas);
+
+      const hoyPeru = obtenerHoyPeru();
+
+      reservasOrdenadas.forEach(reserva => {
+        const fechaReserva = formatearFechaPeru(reserva.fecha_reserva);
+        const esHoy = fechaReserva === hoyPeru;
+        
+        const fila = document.createElement('tr');
+        if (esHoy) fila.classList.add('hoy');
+        
+        fila.innerHTML = `
+          <td><strong>${reserva._id.substring(0, 8)}...</strong></td>
+          <td>
+            <strong>${reserva.cliente_nombre}</strong><br>
+            <small style="color: #666;">📞 ${reserva.cliente_telefono}</small><br>
+            <small style="color: #666;">✉️ ${reserva.cliente_email}</small>
+          </td>
+          <td><strong>${fechaReserva}</strong></td>
+          <td><strong>${reserva.hora_reserva}</strong></td>
+          <td>${reserva.numero_personas} 👥</td>
+          <td>${obtenerEtiquetaTipo(reserva.tipo_reserva)}</td>
+          <td><span class="estado ${reserva.estado}">${reserva.estado}</span></td>
+        `;
+        tbody.appendChild(fila);
+      });
+    }
+
+    // Obtener etiqueta para tipo de reserva
+    function obtenerEtiquetaTipo(tipo) {
+      const tipos = {
+        desayuno: '☀️ Desayuno',
+        almuerzo: '🍽️ Almuerzo',
+        cena: '🌙 Cena',
+        merienda: '🍵 Merienda'
+      };
+      return tipos[tipo] || tipo;
+    }
+
+    // Ver detalles de reserva
+    async function verDetalles(id) {
+      try {
+        const response = await fetch(`${API_BASE}/${id}`);
+        const reserva = await response.json();
+
+        let platosHTML = '';
+        if (reserva.platos_reservados && reserva.platos_reservados.length > 0) {
+          platosHTML = `
+            <h3>Platos Reservados:</h3>
+            <div class="platos-lista">
+              ${reserva.platos_reservados.map(plato => `
+                <div class="plato-item">
+                  <span>${plato.cantidad}x ${plato.plato_nombre}</span>
+                  <span>S/ ${(plato.precio * plato.cantidad).toFixed(2)}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        document.getElementById('detallesContenido').innerHTML = `
+          <p><strong>Cliente:</strong> ${reserva.cliente_nombre}</p>
+          <p><strong>Email:</strong> ${reserva.cliente_email}</p>
+          <p><strong>Teléfono:</strong> ${reserva.cliente_telefono}</p>
+          <p><strong>Fecha:</strong> ${formatearFechaPeru(reserva.fecha_reserva)}</p>
+          <p><strong>Hora:</strong> ${reserva.hora_reserva}</p>
+          <p><strong>Personas:</strong> ${reserva.numero_personas}</p>
+          <p><strong>Tipo:</strong> ${obtenerEtiquetaTipo(reserva.tipo_reserva)}</p>
+          <p><strong>Estado:</strong> <span class="estado ${reserva.estado}">${reserva.estado}</span></p>
+          ${reserva.notas_especiales ? `<p><strong>Notas:</strong> ${reserva.notas_especiales}</p>` : ''}
+          ${platosHTML}
+        `;
+
+        document.getElementById('modalDetalles').style.display = 'block';
+      } catch (error) {
+        console.error('Error cargando detalles:', error);
+        alert('Error al cargar los detalles');
+      }
+    }
+
+    // El administrador ya no puede cambiar estados, solo visualizar
+
+    // Actualizar estadísticas
+    function actualizarEstadisticas(reservas) {
+      const hoyPeru = obtenerHoyPeru();
+      const reservasHoy = reservas.filter(r => 
+        formatearFechaPeru(r.fecha_reserva) === hoyPeru
+      );
+
+      document.getElementById('total').textContent = reservas.length;
+      document.getElementById('hoy').textContent = reservasHoy.length;
+      document.getElementById('confirmadas').textContent = reservas.filter(r => r.estado === 'confirmada').length;
+      document.getElementById('pendientes').textContent = reservas.filter(r => r.estado === 'pendiente').length;
+    }
+
+    // Función para alternar ordenamiento por ID
+    function alternarOrdenamiento() {
+      ordenAscendente = !ordenAscendente;
+      const btnOrdenar = document.getElementById('btn-ordenar-id');
+      
+      // Actualizar texto del botón
+      if (ordenAscendente) {
+        btnOrdenar.textContent = '🔢 Ordenar por ID (Asc)';
+      } else {
+        btnOrdenar.textContent = '🔢 Ordenar por ID (Desc)';
+      }
+      
+      // Recargar reservas para aplicar el nuevo orden
+      cargarReservas();
+    }
+
+    // Limpiar filtros
+    function limpiarFiltros() {
+      document.getElementById('fechaFiltro').value = '';
+      document.getElementById('estadoFiltro').value = '';
+      document.getElementById('tipoFiltro').value = '';
+      cargarReservas();
+    }
+    
+    // Mostrar notificación de actualización
+    function mostrarNotificacionActualizacion() {
+      const notif = document.createElement('div');
+      notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 2000;
+        animation: slideIn 0.3s ease;
+      `;
+      notif.textContent = '✅ Lista actualizada';
+      document.body.appendChild(notif);
+      setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
+      }, 2000);
+    }
+    
+    // Agregar estilos para animaciones
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Modal functions
+    function cerrarModal() {
+      document.getElementById('modalDetalles').style.display = 'none';
+    }
+
+    // Cerrar modal al hacer click fuera
+    window.onclick = function(event) {
+      const modal = document.getElementById('modalDetalles');
+      if (event.target === modal) {
+        cerrarModal();
+      }
+    }
+
+    // Función para mostrar modal de nueva reserva (placeholder)
+    function mostrarModalNuevaReserva() {
+      alert('Funcionalidad de nueva reserva desde admin - próximamente');
+      // Aquí se puede implementar un modal para crear reservas desde el admin
+    }
+
+
+    // Cargar al iniciar - mostrar todas las reservas
+    document.addEventListener('DOMContentLoaded', function() {
+      // No establecer filtro de fecha por defecto para mostrar todas las reservas
+      // El usuario puede filtrar si lo desea
+      cargarReservas();
+      
+      // Inicializar texto del botón de ordenamiento
+      const btnOrdenar = document.getElementById('btn-ordenar-id');
+      if (btnOrdenar) {
+        btnOrdenar.textContent = ordenAscendente 
+          ? '🔢 Ordenar por ID (Asc)' 
+          : '🔢 Ordenar por ID (Desc)';
+      }
+      
+      // Auto-refresh cada 5 segundos para ver cambios en tiempo real
+      setInterval(() => {
+        cargarReservas();
+      }, 5000);
+    });
+  </script>
+</body>
+</html>

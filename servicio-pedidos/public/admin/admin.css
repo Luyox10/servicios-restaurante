@@ -1,0 +1,109 @@
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  color: #2c2c2c;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+main h1 {
+  color: #8b0000;
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e6caca;
+  text-align: center;
+  font-size: 15px;
+}
+
+th {
+  background: #f5d2d2; /* rojo claro suave */
+  color: #6e1414; /* rojo oscuro */
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+tr:hover {
+  background-color: #fff3f3;
+  transition: background 0.3s ease;
+}
+
+/* ✅ Fila de pedido entregado (color elegante y discreto) */
+tr.entregado {
+  background-color: #f0f0f0;
+  color: #4a4a4a;
+  font-weight: 600;
+  border-left: 6px solid #b22222;
+}
+
+/* 🔹 Botones */
+button {
+  background: #b22222;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background: #8b1a1a;
+  transform: scale(1.05);
+}
+
+/* 🔹 Select */
+select {
+  padding: 6px 8px;
+  border: 1px solid #c9b1b1;
+  border-radius: 5px;
+  background: #fff8f8;
+  font-size: 14px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #b22222;
+  box-shadow: 0 0 4px rgba(178, 34, 34, 0.3);
+}
+
+/* 🔹 Tabla vacía */
+td[colspan="7"] {
+  color: #999;
+  font-style: italic;
+}
+
+/* Estilos para el contenido principal */
+main {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  max-width: 1400px;
+}
+
+@media (max-width: 768px) {
+  main {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+}

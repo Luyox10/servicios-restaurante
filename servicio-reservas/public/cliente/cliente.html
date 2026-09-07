@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar Mesa - La Mamasa</title>
+  <style>
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+    .container {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: white;
+      color: #333;
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #8b0000;
+    }
+    .header h1 {
+      color: #8b0000;
+      margin: 0 0 10px 0;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .header p {
+      color: #666;
+      font-size: 1.1rem;
+      margin: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: #8b0000;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+    }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 0, 0, 0.4);
+    }
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .horarios-disponibles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .horario-btn {
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      font-size: 15px;
+    }
+    .horario-btn:hover:not(.disabled) {
+      border-color: #8b0000;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(139, 0, 0, 0.2);
+    }
+    .horario-btn.selected {
+      border-color: #8b0000;
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(139, 0, 0, 0.3);
+    }
+    .horario-btn.disabled {
+      background: #f8f8f8;
+      color: #ccc;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .pasos {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      position: relative;
+      padding: 0 20px;
+    }
+    .pasos::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: linear-gradient(90deg, #ddd 0%, #ddd 100%);
+      z-index: 1;
+      border-radius: 2px;
+    }
+    .paso {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      transition: all 0.3s ease;
+    }
+    .paso-numero {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #ddd;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+      font-weight: bold;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .paso.activo .paso-numero {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+    }
+    .paso.completado .paso-numero {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    .paso-texto {
+      font-size: 12px;
+      color: #666;
+    }
+    .paso.activo .paso-texto {
+      color: #8b0000;
+      font-weight: bold;
+    }
+    .seccion {
+      display: none;
+      animation: fadeOut 0.3s ease;
+    }
+    .seccion.activa {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+    .resumen-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 1.05rem;
+    }
+    .resumen-item:last-child {
+      border-bottom: none;
+    }
+    .resumen-item span:first-child {
+      font-weight: 600;
+      color: #555;
+    }
+    .resumen-item span:last-child {
+      color: #8b0000;
+      font-weight: 500;
+    }
+    .exito {
+      text-align: center;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      border-radius: 12px;
+      border: 2px solid #28a745;
+    }
+    .exito h2 {
+      color: #28a745;
+      margin-bottom: 20px;
+      font-size: 2rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+    .exito p {
+      color: #155724;
+      font-size: 1.1rem;
+      margin: 10px 0;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+    .error {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      text-align: center;
+      border: 2px solid #dc3545;
+      font-weight: 500;
+      animation: shake 0.5s;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    .nav-header {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .nav-header-left {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .nav-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.8rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links a.active {
+      background-color: rgba(255, 255, 255, 0.4);
+      font-weight: bold;
+    }
+    
+    .user-icon-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 20px;
+    }
+    
+    .user-icon-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    
+    .user-icon-link:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .user-icon {
+      font-size: 24px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <div class="nav-header-left">
+      <h1>🍽️ La Mamasa</h1>
+      <nav class="nav-links">
+        <a href="http://localhost:4000/cliente/inicio.html">🏠 Inicio</a>
+        <a href="http://localhost:4000/cliente/menu.html">🍽️ Menú</a>
+        <a href="http://localhost:4001">📦 Pedidos</a>
+        <a href="http://localhost:4004/cliente/cliente.html" class="active">📅 Reservas</a>
+      </nav>
+    </div>
+      <div class="user-icon-container" id="userContainer">
+        <a href="http://localhost:3000/cliente/user.html" class="user-icon-link" id="userLink">
+          <span class="user-icon">👤</span>
+          <span id="userText">Login</span>
+        </a>
+        <div id="userMenu" style="display: none; position: relative;">
+          <div style="position: absolute; top: 100%; right: 0; margin-top: 10px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); padding: 10px; min-width: 150px; z-index: 1000;">
+            <button id="logoutBtn" style="width: 100%; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar Sesión</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="container">
+    <div class="header">
+      <h1>🍽️ La Mamasa</h1>
+      <p>Reserva tu mesa con nosotros</p>
+    </div>
+
+    <div class="pasos">
+      <div class="paso activo" id="paso1">
+        <div class="paso-numero">1</div>
+        <div class="paso-texto">Fecha & Hora</div>
+      </div>
+      <div class="paso" id="paso2">
+        <div class="paso-numero">2</div>
+        <div class="paso-texto">Datos Personales</div>
+      </div>
+      <div class="paso" id="paso3">
+        <div class="paso-numero">3</div>
+        <div class="paso-texto">Confirmación</div>
+      </div>
+    </div>
+
+    <!-- Paso 1: Fecha y Hora -->
+    <div id="seccion1" class="seccion activa">
+      <div class="form-group">
+        <label for="fecha">Fecha de reserva</label>
+        <input type="date" id="fecha" min="" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="tipoReserva">Tipo de reserva</label>
+        <select id="tipoReserva" required>
+          <option value="">Selecciona un tipo</option>
+          <option value="desayuno">Desayuno</option>
+          <option value="almuerzo">Almuerzo</option>
+          <option value="cena">Cena</option>
+          <option value="merienda">Merienda</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="personas">Número de personas</label>
+        <select id="personas" required>
+          <option value="">Selecciona cantidad</option>
+          <option value="1">1 persona</option>
+          <option value="2">2 personas</option>
+          <option value="3">3 personas</option>
+          <option value="4">4 personas</option>
+          <option value="5">5 personas</option>
+          <option value="6">6 personas</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Horarios disponibles</label>
+        <div id="horariosContainer" class="horarios-disponibles">
+          <div class="loading">Selecciona una fecha para ver horarios disponibles</div>
+        </div>
+      </div>
+
+      <button class="btn" onclick="siguientePaso(2)" id="btnPaso1" disabled>Continuar</button>
+    </div>
+
+    <!-- Paso 2: Datos Personales -->
+    <div id="seccion2" class="seccion">
+      <div class="form-group">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <input type="tel" id="telefono" required>
+      </div>
+
+      <div class="form-group">
+        <label for="notas">Notas especiales (opcional)</label>
+        <textarea id="notas" rows="3" placeholder="Alergias, preferencias, celebraciones especiales..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button class="btn" onclick="anteriorPaso(1)" style="background: #6c757d;">Anterior</button>
+        <button class="btn" onclick="siguientePaso(3)">Continuar</button>
+      </div>
+    </div>
+
+    <!-- Paso 3: Confirmación -->
+    <div id="seccion3" class="seccion">
+      <h3>Resumen de tu reserva</h3>
+      <div id="resumenReserva"></div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn" onclick="anteriorPaso(2)" style="background: #6c757d;">Anterior</button>
+        <button class="btn" onclick="confirmarReserva()" id="btnConfirmar">Confirmar Reserva</button>
+      </div>
+    </div>
+
+    <!-- Paso 4: Éxito -->
+    <div id="seccion4" class="seccion">
+      <div class="exito">
+        <h2>✅ ¡Reserva Confirmada!</h2>
+        <p id="mensajeExito"></p>
+        <p>Te hemos enviado un email de confirmación con todos los detalles.</p>
+        <button class="btn" onclick="nuevaReserva()" style="background: #28a745;">Hacer otra reserva</button>
+      </div>
+    </div>
+
+    <div id="error" class="error" style="display: none;"></div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:4004/api/reservas';
+
+    let datosReserva = {
+      fecha: '',
+      hora: '',
+      tipoReserva: '',
+      personas: 0,
+      nombre: '',
+      email: '',
+      telefono: '',
+      notas: ''
+    };
+
+    // Inicializar fecha mínima como hoy
+    document.addEventListener('DOMContentLoaded', function() {
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha').min = hoy;
+      document.getElementById('fecha').value = hoy;
+      
+      // Cargar horarios para hoy
+      cargarHorariosDisponibles(hoy);
+    });
+
+    // Cambiar fecha
+    document.getElementById('fecha').addEventListener('change', function() {
+      cargarHorariosDisponibles(this.value);
+    });
+
+    // Cambiar tipo de reserva
+    document.getElementById('tipoReserva').addEventListener('change', function() {
+      verificarPaso1();
+    });
+
+    // Cambiar número de personas
+    document.getElementById('personas').addEventListener('change', function() {
+      verificarPaso1();
+    });
+
+    // Cargar horarios disponibles
+    async function cargarHorariosDisponibles(fecha) {
+      const container = document.getElementById('horariosContainer');
+      container.innerHTML = '<div class="loading">Cargando horarios disponibles...</div>';
+
+      if (!fecha) {
+        container.innerHTML = '<div class="error">Por favor selecciona una fecha</div>';
+        return;
+      }
+
+      try {
+        console.log('📅 Cargando horarios para fecha:', fecha);
+        const response = await fetch(`${API_BASE}/disponibles?fecha=${fecha}`);
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Error desconocido' }));
+          throw new Error(errorData.error || `Error ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('📅 Horarios recibidos:', data);
+
+        container.innerHTML = '';
+
+        if (!data.horarios_disponibles || data.horarios_disponibles.length === 0) {
+          container.innerHTML = '<div class="error">No hay horarios disponibles para esta fecha</div>';
+          return;
+        }
+
+        data.horarios_disponibles.forEach(horario => {
+          const btn = document.createElement('button');
+          btn.className = 'horario-btn';
+          btn.textContent = horario;
+          btn.onclick = () => seleccionarHorario(horario, btn);
+          container.appendChild(btn);
+        });
+
+        datosReserva.fecha = fecha;
+        verificarPaso1();
+      } catch (error) {
+        console.error('❌ Error cargando horarios:', error);
+        container.innerHTML = `<div class="error">Error al cargar horarios: ${error.message}</div>`;
+      }
+    }
+
+    // Seleccionar horario
+    function seleccionarHorario(horario, elemento) {
+      // Deseleccionar anterior
+      document.querySelectorAll('.horario-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+
+      // Seleccionar nuevo
+      elemento.classList.add('selected');
+      datosReserva.hora = horario;
+      verificarPaso1();
+    }
+
+    // Verificar si paso 1 está completo
+    function verificarPaso1() {
+      const completo = datosReserva.fecha && 
+                      datosReserva.hora && 
+                      document.getElementById('tipoReserva').value && 
+                      document.getElementById('personas').value;
+      
+      document.getElementById('btnPaso1').disabled = !completo;
+    }
+
+    // Navegación entre pasos
+    function siguientePaso(paso) {
+      // Validar y guardar datos del paso actual
+      if (paso === 2) {
+        datosReserva.tipoReserva = document.getElementById('tipoReserva').value;
+        datosReserva.personas = parseInt(document.getElementById('personas').value);
+      } else if (paso === 3) {
+        datosReserva.nombre = document.getElementById('nombre').value;
+        datosReserva.email = document.getElementById('email').value;
+        datosReserva.telefono = document.getElementById('telefono').value;
+        datosReserva.notas = document.getElementById('notas').value;
+        mostrarResumen();
+      }
+
+      // Ocultar todas las secciones
+      document.querySelectorAll('.seccion').forEach(sec => {
+        sec.classList.remove('activa');
+      });
+
+      // Mostrar siguiente sección
+      document.getElementById(`seccion${paso}`).classList.add('activa');
+
+      // Actualizar pasos
+      document.querySelectorAll('.paso').forEach((pasoElem, index) => {
+        pasoElem.classList.remove('activo', 'completado');
+        if (index + 1 === paso) {
+          pasoElem.classList.add('activo');
+        } else if (index + 1 < paso) {
+          pasoElem.classList.add('completado');
+        }
+      });
+    }
+
+    function anteriorPaso(paso) {
+      siguientePaso(paso);
+    }
+
+    // Formatear fecha en zona horaria de Perú
+    function formatearFechaPeru(fechaStr) {
+      if (!fechaStr) return '';
+      const [year, month, day] = fechaStr.split('-');
+      const fecha = new Date(`${year}-${month}-${day}T00:00:00-05:00`);
+      return fecha.toLocaleDateString('es-PE', {
+        timeZone: 'America/Lima',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+
+    // Mostrar resumen
+    function mostrarResumen() {
+      const resumen = document.getElementById('resumenReserva');
+      resumen.innerHTML = `
+        <div class="resumen-item">
+          <span>Fecha:</span>
+          <span>${formatearFechaPeru(datosReserva.fecha)}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Hora:</span>
+          <span>${datosReserva.hora}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Tipo:</span>
+          <span>${datosReserva.tipoReserva}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Personas:</span>
+          <span>${datosReserva.personas}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Nombre:</span>
+          <span>${datosReserva.nombre}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Email:</span>
+          <span>${datosReserva.email}</span>
+        </div>
+        <div class="resumen-item">
+          <span>Teléfono:</span>
+          <span>${datosReserva.telefono}</span>
+        </div>
+        ${datosReserva.notas ? `
+        <div class="resumen-item">
+          <span>Notas:</span>
+          <span>${datosReserva.notas}</span>
+        </div>
+        ` : ''}
+      `;
+    }
+
+    // Confirmar reserva
+    async function confirmarReserva() {
+      const btn = document.getElementById('btnConfirmar');
+      btn.disabled = true;
+      btn.textContent = 'Procesando...';
+
+      try {
+        const response = await fetch(API_BASE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            cliente_nombre: datosReserva.nombre,
+            cliente_email: datosReserva.email,
+            cliente_telefono: datosReserva.telefono,
+            fecha_reserva: datosReserva.fecha,
+            hora_reserva: datosReserva.hora,
+            numero_personas: datosReserva.personas,
+            tipo_reserva: datosReserva.tipoReserva,
+            notas_especiales: datosReserva.notas
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error);
+        }
+
+        const reserva = await response.json();
+        mostrarExito(reserva._id);
+      } catch (error) {
+        mostrarError(error.message);
+        btn.disabled = false;
+        btn.textContent = 'Confirmar Reserva';
+      }
+    }
+
+    // Mostrar pantalla de éxito
+    function mostrarExito(idReserva) {
+      document.getElementById('mensajeExito').textContent = 
+        `Tu reserva #${idReserva} ha sido confirmada para el ${formatearFechaPeru(datosReserva.fecha)} a las ${datosReserva.hora}.`;
+      siguientePaso(4);
+    }
+
+    // Nueva reserva
+    function nuevaReserva() {
+      // Resetear datos
+      datosReserva = {
+        fecha: '',
+        hora: '',
+        tipoReserva: '',
+        personas: 0,
+        nombre: '',
+        email: '',
+        telefono: '',
+        notas: ''
+      };
+
+      // Resetear formulario
+      document.getElementById('fecha').value = new Date().toISOString().split('T')[0];
+      document.getElementById('tipoReserva').value = '';
+      document.getElementById('personas').value = '';
+      document.getElementById('nombre').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('telefono').value = '';
+      document.getElementById('notas').value = '';
+
+      // Volver al paso 1
+      siguientePaso(1);
+      cargarHorariosDisponibles(document.getElementById('fecha').value);
+    }
+
+    // Mostrar error
+    function mostrarError(mensaje) {
+      const errorDiv = document.getElementById('error');
+      errorDiv.textContent = mensaje;
+      errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    // 🔹 Obtener usuario del localStorage
+    function obtenerUsuario() {
+      const usuarioStr = localStorage.getItem("usuario");
+      return usuarioStr ? JSON.parse(usuarioStr) : null;
+    }
+
+    // 🔹 Actualizar cabezal con información del usuario
+    function actualizarCabezalUsuario() {
+      const usuario = obtenerUsuario();
+      const userText = document.getElementById("userText");
+      const userLink = document.getElementById("userLink");
+      const userMenu = document.getElementById("userMenu");
+
+      if (usuario) {
+        const primerNombre = usuario.nombre.split(" ")[0];
+        userText.textContent = primerNombre;
+        userLink.href = "#";
+        userLink.onclick = (e) => {
+          e.preventDefault();
+          userMenu.style.display = userMenu.style.display === "none" ? "block" : "none";
+        };
+        userMenu.style.display = "none";
+      } else {
+        userText.textContent = "Login";
+        userLink.href = "http://localhost:3000/cliente/user.html";
+        userLink.onclick = null;
+        userMenu.style.display = "none";
+      }
+    }
+
+    // 🔹 Cerrar sesión
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      const usuario = obtenerUsuario();
+      const API_CARRITO = "http://localhost:4000/api/menu/carrito";
+      
+      if (usuario) {
+        // Vaciar carrito del usuario
+        try {
+          await fetch(`${API_CARRITO}/vaciar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ usuario_id: usuario.id })
+          });
+        } catch (err) {
+          console.error("Error al vaciar carrito:", err);
+        }
+      }
+
+      // Limpiar localStorage
+      localStorage.removeItem("usuario");
+      
+      // Redirigir al login
+      window.location.href = "http://localhost:3000/cliente/user.html";
+    });
+
+    // Inicializar
+    actualizarCabezalUsuario();
+
+    // Cerrar menú de usuario al hacer click fuera
+    document.addEventListener("click", (e) => {
+      const userMenu = document.getElementById("userMenu");
+      const userLink = document.getElementById("userLink");
+      if (userMenu && !userMenu.contains(e.target) && !userLink.contains(e.target)) {
+        userMenu.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>

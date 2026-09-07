@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Pagos - Administrador</title>
+  <link rel="stylesheet" href="pagos.css">
+</head>
+<body>
+  <header>
+    <div class="nav-header">
+      <div class="nav-header-left">
+        <h1>🍽️ La Mamasa - Administración</h1>
+        <nav class="nav-links">
+          <a href="http://localhost:3000/admin/admin.html">👤 Usuarios</a>
+          <a href="http://localhost:4000/admin/menu_admin.html">🍽️ Menú</a>
+          <a href="http://localhost:4001/admin">📦 Pedidos</a>
+          <a href="http://localhost:4002/admin/pagos.html" class="active">💳 Pagos</a>
+          <a href="http://localhost:4004/admin">📅 Reservas</a>
+        </nav>
+      </div>
+      <div class="user-icon-container">
+        <a href="http://localhost:3000/admin/admin.html" class="user-icon-link">
+          <span class="user-icon">👤</span>
+          <span>Admin</span>
+        </a>
+      </div>
+    </div>
+  </header>
+  
+  <div class="content">
+    <h1>Gestión de pagos</h1>
+
+    <!-- Tarjetas de Total -->
+    <div class="stats-container">
+      <div class="stat-card total-periodo">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <h3>Total en Periodo</h3>
+          <p class="stat-value" id="totalPeriodo">S/. 0.00</p>
+          <span class="stat-label" id="labelPeriodo">Seleccione un rango de fechas</span>
+        </div>
+      </div>
+      <div class="stat-card total-general">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <h3>Total General</h3>
+          <p class="stat-value" id="totalGeneral">S/. 0.00</p>
+          <span class="stat-label">Ganancias totales</span>
+        </div>
+      </div>
+      <div class="stat-card total-pendientes">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-content">
+          <h3>Pendientes</h3>
+          <p class="stat-value" id="totalPendientesCard">0</p>
+          <span class="stat-label">Pagos por confirmar</span>
+        </div>
+      </div>
+      <div class="stat-card total-completados">
+        <div class="stat-icon">✅</div>
+        <div class="stat-content">
+          <h3>Completados</h3>
+          <p class="stat-value" id="totalCompletadosCard">0</p>
+          <span class="stat-label">Pagos confirmados</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de Filtros -->
+    <div class="filtros-container">
+      <h3>🔍 Filtros</h3>
+      <div class="filtros-row">
+        <div class="filtro-group">
+          <label for="fecha-desde">Desde:</label>
+          <input type="date" id="fecha-desde">
+        </div>
+        <div class="filtro-group">
+          <label for="fecha-hasta">Hasta:</label>
+          <input type="date" id="fecha-hasta">
+        </div>
+        <div class="filtro-group">
+          <label for="filtro-estado">Estado:</label>
+          <select id="filtro-estado">
+            <option value="todos">Todos</option>
+            <option value="pendientes">Pendientes</option>
+            <option value="completados">Completados</option>
+          </select>
+        </div>
+        <div class="filtro-buttons">
+          <button id="btn-filtrar" class="btn-filtrar">🔍 Filtrar</button>
+          <button id="btn-limpiar" class="btn-limpiar">🔄 Limpiar</button>
+          <button id="btn-ordenar-id" class="btn-ordenar">🔢 Ordenar por ID</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table id="tablaPagos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pedido ID</th>
+            <th>Método</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="pagos.js"></script>
+</body>
+</html>

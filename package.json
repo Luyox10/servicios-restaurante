@@ -1,0 +1,24 @@
+{
+  "name": "servicios",
+  "version": "1.0.0",
+  "description": "Servicios del proyecto La Mamasa",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start:usuarios\" \"npm run start:menu\" \"npm run start:pedidos\" \"npm run start:pagos\" \"npm run start:reservas\" \"npm run start:notificaciones\"",
+    "start:usuarios": "cd servicio-usuarios && npm start",
+    "start:menu": "cd servicio-menu && npm start",
+    "start:pedidos": "cd servicio-pedidos && npm start",
+    "start:pagos": "cd servicio-pagos && npm start",
+    "start:reservas": "cd servicio-reservas && npm start",
+    "start:notificaciones": "cd servicio-notificaciones && npm start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
+
+
+

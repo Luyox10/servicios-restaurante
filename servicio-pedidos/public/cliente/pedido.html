@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Pedido - La Mamasa</title>
+  <link rel="stylesheet" href="pedido.css">
+  <style>
+    .nav-header {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .nav-header-left {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .nav-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.8rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      color: white;
+      text-align: left;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links a.active {
+      background-color: rgba(255, 255, 255, 0.4);
+      font-weight: bold;
+    }
+    
+    .user-icon-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 20px;
+    }
+    
+    .user-icon-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    
+    .user-icon-link:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .user-icon {
+      font-size: 24px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <div class="nav-header-left">
+      <h1>🍽️ La Mamasa</h1>
+      <nav class="nav-links">
+        <a href="http://localhost:4000/cliente/inicio.html">🏠 Inicio</a>
+        <a href="http://localhost:4000/cliente/menu.html">🍽️ Menú</a>
+        <a href="http://localhost:4001" class="active">📦 Pedidos</a>
+        <a href="http://localhost:4004/cliente/cliente.html">📅 Reservas</a>
+      </nav>
+    </div>
+    <div class="user-icon-container" id="userContainer">
+      <a href="http://localhost:3000/cliente/user.html" class="user-icon-link" id="userLink">
+        <span class="user-icon">👤</span>
+        <span id="userText">Login</span>
+      </a>
+      <div id="userMenu" style="display: none; position: relative;">
+        <div style="position: absolute; top: 100%; right: 0; margin-top: 10px; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); padding: 10px; min-width: 150px; z-index: 1000;">
+          <button id="logoutBtn" style="width: 100%; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar Sesión</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+   
+    <!-- CARRITO -->
+    <section id="carrito-servicio-section">
+      <h1>🧾 Mi Pedido</h1>
+
+      <div id="carrito"></div>
+      <p id="total"></p><br><br><br><br>
+
+      <h3>Seleccione el tipo de servicio</h3>
+      <div class="servicio-botones">
+        <button class="servicio-btn" data-tipo="local">En el local</button>
+        <button class="servicio-btn" data-tipo="llevar">Para llevar</button>
+        <button class="servicio-btn" data-tipo="domicilio">A domicilio</button>
+      </div><br><br><br><br>
+
+      <button id="btn-regresar-menu" class="btn-regresar">← Regresar al Menú</button>
+    </section>
+
+    <!-- CLIENTE -->
+    <section id="cliente-section" class="oculto"><br><br>
+      <h2>Datos del Cliente</h2>
+      <input id="nombre" placeholder="Nombre completo">
+      <input id="telefono" placeholder="Teléfono"><br><br>
+      <div class="botones">
+        <button id="btn-regresar-cliente">⬅ Regresar</button>
+        <button id="btn-confirmar-datos">Continuar</button>
+      </div>
+    </section>
+
+    <!-- DIRECCIÓN -->
+    <section id="direccion-section" class="oculto"><br><br>
+      <h2>Dirección de Entrega</h2>
+      <input id="calle" placeholder="Calle o Avenida">
+      <input id="referencia" placeholder="Referencia">
+      <div class="botones">
+        <button id="btn-regresar-direccion">⬅ Regresar</button>
+        <button id="btn-confirmar-direccion">Continuar</button>
+      </div>
+    </section>
+
+  
+<!-- RESUMEN DEL CLIENTE Y DEL PEDIDO -->
+<section id="resumen-section" class="oculto"><br><br>
+
+  <!-- Este aparece al terminar datos del cliente + dirección -->
+  <h2 id="titulo-resumen-cliente" class="oculto">Resumen del Cliente</h2>
+
+  <!-- Este aparece al terminar lista de productos -->
+  <h2 id="titulo-resumen-pedido" class="oculto">Resumen del Pedido</h2>
+
+  <div id="resumen"></div><br><br>
+</section>
+
+
+    <!-- MÉTODO DE PAGO -->
+    <section id="pago-section" class="oculto"><br><br>
+      <h2>Método de Pago</h2>
+      <button class="pago-btn" data-metodo="efectivo">Efectivo</button>
+      <button class="pago-btn" data-metodo="yape">Yape</button><br><br>
+      <div id="pago-extra"></div><br><br>
+      <div class="botones">
+        <button id="btn-regresar-pago">⬅ Regresar</button>
+        <button id="btn-enviar-pedido">Enviar Pedido</button>
+      </div>
+    </section>
+
+   
+
+<!-- SEGUIMIENTO PAGO -->
+<section id="pantalla-seguimiento-pago" class="oculto">
+  <h2>Seguimiento de tu pago</h2>
+  <div class="timeline">
+    <div class="step" id="step-pendiente-pago">
+      <div class="circle activo">1</div>
+      <p>Pendiente</p>
+    </div>
+    <div class="step" id="step-completado-pago">
+      <div class="circle">2</div>
+      <p>Completado</p>
+    </div>
+  </div>
+
+  <p id="estado-texto-pago">⏳ Tu pedido está pendiente de confirmación.</p>
+
+  <div class="loader" id="loader-pago"></div>
+
+ <button id="btn-continuar-pago" disabled>➡ Continuar</button>
+
+</section>
+
+
+<!-- SEGUIMIENTO PEDIDO -->
+<section id="pantalla-seguimiento-pedido" class="oculto">
+  <h2>📍 Estado de tu pedido</h2>
+
+  <div id="tracking-timeline">
+    <div class="step" id="step-pendiente">⏳ Pendiente — Tu pedido está en espera</div>
+    <div class="step" id="step-preparacion">👨‍🍳 En preparación — Estamos preparando tu pedido</div>
+    <div class="step" id="step-camino">🛵 En camino — Tu pedido está en camino</div>
+    <div class="step" id="step-entregado">🎁 Entregado — Pedido completado</div>
+  </div>
+
+  <button id="btn-volver-inicio-pedido">Volver al inicio</button>
+</section>
+
+  <script src="pedido.js"></script>
+  <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
+  <script>
+    const API_CARRITO = "http://localhost:4000/api/menu/carrito";
+
+    // 🔹 Obtener usuario del localStorage
+    function obtenerUsuario() {
+      try {
+        const usuarioStr = localStorage.getItem("usuario");
+        if (!usuarioStr) {
+          return null;
+        }
+        
+        const usuario = JSON.parse(usuarioStr);
+        // Verificar que tenga la estructura esperada
+        if (!usuario || typeof usuario !== 'object') {
+          return null;
+        }
+        
+        // Si no tiene id, intentar usar otras propiedades posibles
+        if (!usuario.id && usuario._id) {
+          usuario.id = usuario._id;
+        }
+        
+        return usuario;
+      } catch (err) {
+        console.error("Error al obtener usuario del localStorage:", err);
+        return null;
+      }
+    }
+
+    // 🔹 Actualizar cabezal con información del usuario
+    function actualizarCabezalUsuario() {
+      const usuario = obtenerUsuario();
+      const userText = document.getElementById("userText");
+      const userLink = document.getElementById("userLink");
+      const userMenu = document.getElementById("userMenu");
+
+      if (usuario && usuario.nombre) {
+        const primerNombre = usuario.nombre.split(" ")[0];
+        userText.textContent = primerNombre;
+        userLink.href = "#";
+        userLink.onclick = (e) => {
+          e.preventDefault();
+          userMenu.style.display = userMenu.style.display === "none" ? "block" : "none";
+        };
+        userMenu.style.display = "none";
+      } else {
+        userText.textContent = "Login";
+        userLink.href = "http://localhost:3000/cliente/user.html";
+        userLink.onclick = null;
+        userMenu.style.display = "none";
+      }
+    }
+
+    // 🔹 Cerrar sesión
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async () => {
+        const usuario = obtenerUsuario();
+        
+        if (usuario && usuario.id) {
+          // Vaciar carrito del usuario
+          try {
+            await fetch(`${API_CARRITO}/vaciar`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ usuario_id: usuario.id })
+            });
+          } catch (err) {
+            console.error("Error al vaciar carrito:", err);
+          }
+        }
+
+        // Limpiar localStorage
+        localStorage.removeItem("usuario");
+        
+        // Redirigir al login
+        window.location.href = "http://localhost:3000/cliente/user.html";
+      });
+    }
+
+    // Inicializar
+    actualizarCabezalUsuario();
+
+    // Cerrar menú de usuario al hacer click fuera
+    document.addEventListener("click", (e) => {
+      const userMenu = document.getElementById("userMenu");
+      const userLink = document.getElementById("userLink");
+      if (userMenu && !userMenu.contains(e.target) && userLink && !userLink.contains(e.target)) {
+        userMenu.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>

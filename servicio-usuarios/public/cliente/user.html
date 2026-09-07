@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inicio de Sesión - Restaurante</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="login.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <style>
+    /* ===== CONTENEDOR DE CONTRASEÑA ===== */
+    .password-container {
+      position: relative;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .password-container input {
+      width: 100%;
+      padding-right: 40px;
+      box-sizing: border-box;
+    }
+
+    .password-container i {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #444;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+
+    .password-container i:hover {
+      color: #000;
+    }
+
+    /* ===== MENSAJES ===== */
+    #errorConfirmacion,
+    #errorSeguridad {
+      color: red;
+      font-size: 0.9em;
+      display: none;
+      margin-bottom: 8px;
+    }
+
+    #mensajeLogin, #mensajeRegistro {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #mensajeRegistro.exito { color: green; }
+    #mensajeRegistro.error { color: red; }
+
+    /* ===== MODAL ===== */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    /* ===== MENU USUARIO ===== */
+    .user-menu {
+      position: relative;
+      display: inline-block;
+    }
+
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      min-width: 180px;
+      z-index: 200;
+    }
+
+    .user-dropdown p {
+      margin: 4px 0;
+      font-size: 0.9em;
+    }
+
+    .user-dropdown button {
+      width: 100%;
+      padding: 6px;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .user-dropdown button:hover {
+      background: #ff1a1a;
+    }
+
+    .user-menu:hover .user-dropdown {
+      display: block;
+    }
+    
+    /* Centrar login cuando no hay header */
+    body:has(#headerNav[style*="display: none"]) {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    body:has(#headerNav[style*="display: none"]) main {
+      width: 100%;
+      max-width: 500px;
+    }
+    
+    .user-icon-container {
+      position: relative;
+    }
+    
+    .user-icon-link:hover {
+      background-color: rgba(255, 255, 255, 0.3) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header class="headerContainer" id="headerNav" style="display: none;">
+    <div class="header-content" style="max-width: 1400px; margin: 0 auto; padding: 1.2rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <div style="display: flex; flex-direction: column; flex: 1;">
+        <h1 style="margin: 0 0 10px 0; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); color: white;">🍽️ La Mamasa</h1>
+        <nav class="nav-links" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="http://localhost:4000/cliente/inicio.html" style="color: white; text-decoration: none; padding: 8px 15px; background-color: rgba(255, 255, 255, 0.2); border-radius: 8px; transition: all 0.3s; font-size: 14px; font-weight: 500;">🏠 Inicio</a>
+          <a href="http://localhost:4000/cliente/menu.html" style="color: white; text-decoration: none; padding: 8px 15px; background-color: rgba(255, 255, 255, 0.2); border-radius: 8px; transition: all 0.3s; font-size: 14px; font-weight: 500;">🍽️ Menú</a>
+          <a href="http://localhost:4001" style="color: white; text-decoration: none; padding: 8px 15px; background-color: rgba(255, 255, 255, 0.2); border-radius: 8px; transition: all 0.3s; font-size: 14px; font-weight: 500;">📦 Pedidos</a>
+          <a href="http://localhost:4004/cliente/cliente.html" style="color: white; text-decoration: none; padding: 8px 15px; background-color: rgba(255, 255, 255, 0.2); border-radius: 8px; transition: all 0.3s; font-size: 14px; font-weight: 500;">📅 Reservas</a>
+        </nav>
+      </div>
+      <div class="user-icon-container" style="display: flex; align-items: center; gap: 10px; margin-left: 20px;">
+        <a id="loginLink" href="http://localhost:3000/cliente/user.html" class="user-icon-link" style="display: flex; align-items: center; gap: 8px; color: white; text-decoration: none; padding: 10px 18px; background-color: rgba(255, 255, 255, 0.2); border-radius: 25px; transition: all 0.3s; font-weight: 500; font-size: 15px;">
+          <span class="user-icon" style="font-size: 24px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background-color: rgba(255, 255, 255, 0.2); border-radius: 50%;">👤</span>
+          <span id="userTextNav">Login</span>
+        </a>
+        <div id="userDropdown" class="user-dropdown" style="display: none; position: absolute; right: 0; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); min-width: 180px; z-index: 200; margin-top: 10px;">
+          <p><strong id="nombreUsuario"></strong></p>
+          <p id="correoUsuario"></p>
+          <button id="logoutBtn" style="width: 100%; padding: 6px; background: #ff4d4d; color: white; border: none; border-radius: 6px; cursor: pointer;">Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== LOGIN ===== -->
+  <main>
+    <section id="login" class="contenido visible">
+      <h2>Inicio de Sesión</h2>
+      <div id="loginSection">
+        <div class="logo-login">
+          <img src="1.png" alt="Logo Restaurante" />
+        </div>
+
+        <form id="loginForm">
+          <input type="email" name="correo" placeholder="Correo electrónico" required />
+          
+          <div class="password-container">
+            <input type="password" id="loginPassword" name="contrasena" placeholder="Contraseña" required />
+            <i class="fa-solid fa-eye" id="toggleLoginPassword"></i>
+          </div>
+          
+          <button type="submit">Ingresar</button>
+          <button type="button" onclick="mostrarRegistro()">Crear cuenta</button>
+        </form>
+        <p id="mensajeLogin"></p>
+      </div>
+    <!-- ===== MODAL REGISTRO ===== -->
+<div id="registroVentana" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h3>Crear nueva cuenta</h3>
+    <form id="registroForm">
+      <input type="text" name="nombre" placeholder="Nombre completo" required />
+      <input type="email" name="correo" placeholder="Correo electrónico" required />
+
+      <div class="password-container">
+        <input type="password" id="password" name="contrasena" placeholder="Contraseña" required />
+        <i class="fa-solid fa-eye" id="togglePassword"></i>
+      </div>
+
+      <div class="password-container">
+        <input type="password" id="confirmPassword" placeholder="Confirmar contraseña" required />
+        <i class="fa-solid fa-eye" id="toggleConfirmPassword"></i>
+      </div>
+
+      <p id="errorConfirmacion">⚠️ Las contraseñas no coinciden</p>
+      <p id="errorSeguridad">
+        ⚠️ La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.
+      </p>
+
+      <input type="text" name="telefono" placeholder="Teléfono" />
+      <input type="text" name="direccion" placeholder="Dirección" />
+      <button type="submit">Registrar</button>
+      <button type="button" onclick="cerrarRegistro()">Cancelar</button>
+    </form>
+    <p id="mensajeRegistro"></p>
+  </div>
+</div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Restaurante Mamasa.</p>
+  </footer>
+
+ <script>
+const apiBase = "http://localhost:3000/api";
+// ================================
+  // FUNCIONES DE MODAL
+  // ================================
+  function mostrarRegistro() {
+    document.getElementById('registroVentana').style.display = 'flex';
+  }
+
+  function cerrarRegistro() {
+    document.getElementById('registroVentana').style.display = 'none';
+  }
+
+  // ================================
+  // MOSTRAR / OCULTAR CONTRASEÑAS
+  // ================================
+  function setupPasswordToggle(toggleId, inputId) {
+    const toggle = document.getElementById(toggleId);
+    const input = document.getElementById(inputId);
+    toggle.addEventListener("click", () => {
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      toggle.classList.toggle("fa-eye");
+      toggle.classList.toggle("fa-eye-slash");
+    });
+  }
+  setupPasswordToggle("togglePassword", "password");
+  setupPasswordToggle("toggleConfirmPassword", "confirmPassword");
+  setupPasswordToggle("toggleLoginPassword", "loginPassword");
+
+  // ================================
+  // VALIDACIÓN DE CONTRASEÑAS
+  // ================================
+  const passwordInput = document.getElementById("password");
+  const confirmInput = document.getElementById("confirmPassword");
+  const errorMsg = document.getElementById("errorConfirmacion");
+  const errorSecurity = document.getElementById("errorSeguridad");
+
+  function esContrasenaSegura(pass) {
+    const regex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|:;"'<>,.?/~]).{8,}$/;
+    return regex.test(pass);
+  }
+
+  function verificarContraseñas() {
+    let valido = true;
+
+    if (!esContrasenaSegura(passwordInput.value)) {
+      errorSecurity.style.display = "block";
+      valido = false;
+    } else {
+      errorSecurity.style.display = "none";
+    }
+
+    if (confirmInput.value && passwordInput.value !== confirmInput.value) {
+      errorMsg.style.display = "block";
+      valido = false;
+    } else {
+      errorMsg.style.display = "none";
+    }
+
+    return valido;
+  }
+
+  confirmInput.addEventListener("input", verificarContraseñas);
+  passwordInput.addEventListener("input", verificarContraseñas);
+
+  // ================================
+  // REGISTRO
+  // ================================
+  document
+    .getElementById("registroForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("mensajeRegistro");
+      msg.textContent = "";
+      msg.className = "";
+
+      if (!verificarContraseñas()) {
+        msg.textContent = "⚠️ Revisa los requisitos de contraseña.";
+        msg.classList.add("error");
+        return;
+      }
+
+      const form = e.target;
+      const body = {
+        nombre: form.nombre.value,
+        correo: form.correo.value,
+        contrasena: form.contrasena.value,
+        telefono: form.telefono.value,
+        direccion: form.direccion.value,
+      };
+
+      try {
+        const res = await fetch(apiBase + "/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          msg.textContent = "✅ Registro exitoso. Redirigiendo al login...";
+          msg.classList.add("exito");
+          form.reset();
+          setTimeout(() => {
+            cerrarRegistro();
+            window.location.href = "http://localhost:3000/cliente/user.html";
+          }, 1500);
+        } else {
+          msg.textContent = data.error || "⚠️ El correo ya está registrado.";
+          msg.classList.add("error");
+        }
+      } catch (err) {
+        msg.textContent = "❌ Error al registrar. Inténtalo más tarde.";
+        msg.classList.add("error");
+      }
+    });
+// ================================
+// LOGIN
+// ================================
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = document.getElementById('mensajeLogin');
+  msg.textContent = "";
+
+  const form = e.target;
+  const body = { correo: form.correo.value, contrasena: form.contrasena.value };
+
+  try {
+    const res = await fetch(apiBase + '/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    if (res.ok && data.usuario) {
+      // Validar que el usuario tenga la estructura correcta
+      if (!data.usuario.id) {
+        console.error("El usuario no tiene id:", data.usuario);
+        msg.textContent = "❌ Error: datos de usuario inválidos";
+        msg.style.color = "red";
+        return;
+      }
+      
+      // Guardar usuario en localStorage
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+      console.log("Usuario guardado en localStorage:", data.usuario);
+      
+      msg.textContent = "✅ Login exitoso. Redirigiendo...";
+      msg.style.color = "green";
+
+      // Mostrar mensaje de éxito por 2 segundos antes de redirigir
+      setTimeout(() => {
+        window.location.href = "http://localhost:4000/cliente/menu.html";
+      }, 2000);
+    } else {
+      msg.textContent = data.error || "Credenciales incorrectas.";
+      msg.style.color = "red";
+    }
+  } catch (err) {
+    msg.textContent = "❌ Error al iniciar sesión.";
+    msg.style.color = "red";
+  }
+});
+
+// ================================
+// ACTUALIZAR MENÚ SUPERIOR SEGÚN SESIÓN
+// ================================
+function actualizarNavUsuario() {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const loginLink = document.getElementById("loginLink");
+  const userDropdown = document.getElementById("userDropdown");
+  const userTextNav = document.getElementById("userTextNav");
+  const nombreUsuario = document.getElementById("nombreUsuario");
+  const correoUsuario = document.getElementById("correoUsuario");
+
+  if (usuario) {
+    // Mostrar nombre y opciones
+    const primerNombre = usuario.nombre.split(" ")[0];
+    if (userTextNav) userTextNav.textContent = primerNombre;
+    if (nombreUsuario) nombreUsuario.textContent = usuario.nombre;
+    if (correoUsuario) correoUsuario.textContent = usuario.correo;
+    loginLink.href = "#";
+    loginLink.onclick = (e) => {
+      e.preventDefault();
+      if (userDropdown) {
+        userDropdown.style.display = userDropdown.style.display === "none" ? "block" : "none";
+      }
+    };
+    if (userDropdown) userDropdown.style.display = "none";
+  } else {
+    // Solo mostrar "Login"
+    if (userTextNav) userTextNav.textContent = "Login";
+    loginLink.href = "http://localhost:3000/cliente/user.html";
+    loginLink.onclick = null;
+    if (userDropdown) userDropdown.style.display = "none";
+  }
+}
+
+// ================================
+// MOSTRAR / OCULTAR FORMULARIO LOGIN
+// ================================
+function verificarSesionEnLogin() {
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const loginSection = document.getElementById("loginSection");
+  const headerNav = document.getElementById("headerNav");
+
+  if (usuario && loginSection) {
+    // Si ya hay sesión, mostrar cabezal y ocultar formulario
+    if (headerNav) headerNav.style.display = "block";
+    loginSection.style.display = "none"; // ocultar formulario si ya inició sesión
+  } else if (loginSection) {
+    // Si no hay sesión, ocultar cabezal y mostrar solo el formulario
+    if (headerNav) headerNav.style.display = "none";
+    loginSection.style.display = "block"; // mostrar formulario si no ha iniciado
+  }
+}
+
+// ================================
+// CERRAR SESIÓN
+// ================================
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    const API_CARRITO = "http://localhost:4000/api/menu/carrito";
+    
+    if (usuario) {
+      // Vaciar carrito del usuario
+      try {
+        await fetch(`${API_CARRITO}/vaciar`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ usuario_id: usuario.id })
+        });
+      } catch (err) {
+        console.error("Error al vaciar carrito:", err);
+      }
+    }
+
+    localStorage.removeItem("usuario");
+    actualizarNavUsuario();
+    verificarSesionEnLogin();
+    window.location.href = "http://localhost:3000/cliente/user.html";
+  });
+}
+
+// ================================
+// AL CARGAR
+// ================================
+document.addEventListener("DOMContentLoaded", () => {
+  actualizarNavUsuario();
+  verificarSesionEnLogin();
+});
+
+
+</script>
+
+
+</body>
+</html>

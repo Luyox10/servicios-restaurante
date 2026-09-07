@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Administrador - La Mamasa</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+      width: 380px;
+      text-align: center;
+    }
+    
+    .login-container .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #8b0000, #dc143c);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+    }
+    
+    .login-container .icon i {
+      font-size: 36px;
+      color: white;
+    }
+    
+    .login-container h2 {
+      color: #1a1a2e;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+    
+    .login-container p.subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+    
+    .input-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    
+    .input-group i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 18px;
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: 15px 15px 15px 50px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    
+    .input-group input:focus {
+      border-color: #8b0000;
+      box-shadow: 0 0 10px rgba(139, 0, 0, 0.1);
+    }
+    
+    button[type="submit"] {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #8b0000, #dc143c);
+      border: none;
+      color: white;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+    }
+    
+    #mensaje {
+      margin-top: 20px;
+      font-weight: 600;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    
+    #mensaje.success {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    #mensaje.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    /* Panel después de login */
+    .nav-header {
+      background: linear-gradient(135deg, #8b0000, #dc143c);
+      color: white;
+      padding: 1rem 2rem;
+      margin-bottom: 20px;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-header h1 {
+      margin: 0 0 15px 0;
+      font-size: 1.5rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+    
+    .nav-links a.active {
+      background: rgba(255, 255, 255, 0.3);
+      font-weight: 600;
+    }
+    
+    #logoutAdminBtn {
+      background: rgba(255, 255, 255, 0.15) !important;
+      width: auto !important;
+      padding: 10px 20px !important;
+    }
+    
+    #logoutAdminBtn:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+    }
+    
+    body.logged-in {
+      display: block;
+      background: #f0f2f5;
+      padding: 0;
+    }
+    
+    body.logged-in .login-container {
+      display: none;
+    }
+
+    /* Panel de administración */
+    .admin-panel {
+      display: none;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    body.logged-in .admin-panel {
+      display: block;
+    }
+
+    .admin-section {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-section h2 {
+      color: #1a1a2e;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      border-bottom: 2px solid #8b0000;
+      padding-bottom: 0.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #8b0000;
+    }
+
+
+    .btn-crear-trabajador {
+      background: linear-gradient(135deg, #8b0000, #dc143c);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .btn-crear-trabajador:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(139, 0, 0, 0.3);
+    }
+
+    .mensaje-exito {
+      background: #d4edda;
+      color: #155724;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .mensaje-error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .lista-trabajadores {
+      margin-top: 2rem;
+    }
+
+    .trabajador-card {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      border-left: 4px solid #8b0000;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .trabajador-info-container {
+      flex: 1;
+    }
+
+    .trabajador-card h3 {
+      margin: 0 0 0.5rem 0;
+      color: #1a1a2e;
+    }
+
+    .trabajador-info {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 0.5rem;
+    }
+
+
+    .btn-eliminar-trabajador {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+      white-space: nowrap;
+      margin-left: 1rem;
+    }
+
+    .btn-eliminar-trabajador:hover {
+      background: #c82333;
+    }
+
+    .btn-designar-turno {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s;
+      white-space: nowrap;
+      margin-left: 1rem;
+    }
+
+    .btn-designar-turno:hover {
+      background: #0056b3;
+    }
+
+    .trabajador-acciones {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .turno-badge {
+      display: inline-block;
+      background: #28a745;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .turno-badge.mañana {
+      background: #ffc107;
+      color: #000;
+    }
+
+    .turno-badge.tarde {
+      background: #fd7e14;
+      color: white;
+    }
+
+    .turno-badge.noche {
+      background: #343a40;
+      color: white;
+    }
+
+    /* Modal para designar turno */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      color: #1a1a2e;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn-turno-option {
+      flex: 1;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .btn-turno-option:hover {
+      border-color: #007bff;
+      background: #f0f8ff;
+      transform: translateY(-2px);
+    }
+
+    .btn-turno-option.selected {
+      border-color: #007bff;
+      background: #007bff;
+      color: white;
+    }
+
+    .btn-cerrar-modal {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .btn-cerrar-modal:hover {
+      background: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header" id="headerNav" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap;">
+      <div>
+        <h1>🏠 La Mamasa - Administración</h1>
+        <nav class="nav-links">
+          <a href="http://localhost:3000/admin/admin.html" class="active">👤 Usuarios</a>
+          <a href="http://localhost:4000/admin/menu_admin.html">🍽️ Menú</a>
+          <a href="http://localhost:4001/admin">📦 Pedidos</a>
+          <a href="http://localhost:4002/admin/pagos.html">💳 Pagos</a>
+          <a href="http://localhost:4004/admin">📅 Reservas</a>
+        </nav>
+      </div>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <span id="adminName" style="color: white; font-weight: 500;"></span>
+        <button id="logoutAdminBtn">
+          🚪 Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="login-container">
+    <div class="icon">
+      <i class="fas fa-user-shield"></i>
+    </div>
+    <h2>Panel Administrador</h2>
+    <p class="subtitle">Acceso exclusivo para administradores</p>
+    <form id="adminLoginForm">
+      <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="correo" placeholder="Correo electrónico" required />
+      </div>
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="contrasena" placeholder="Contraseña" required />
+      </div>
+      <button type="submit">
+        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+      </button>
+    </form>
+    <p id="mensaje"></p>
+  </div>
+
+  <!-- Panel de Administración -->
+  <div class="admin-panel" id="adminPanel">
+    <!-- Sección: Crear Trabajador -->
+    <div class="admin-section">
+      <h2>➕ Crear Nuevo Trabajador</h2>
+      <form id="formCrearTrabajador">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nombreTrabajador">Nombre completo *</label>
+            <input type="text" id="nombreTrabajador" required />
+          </div>
+          <div class="form-group">
+            <label for="correoTrabajador">Correo electrónico *</label>
+            <input type="email" id="correoTrabajador" required />
+          </div>
+          <div class="form-group">
+            <label for="contrasenaTrabajador">Contraseña *</label>
+            <input type="password" id="contrasenaTrabajador" required />
+          </div>
+          <div class="form-group">
+            <label for="telefonoTrabajador">Teléfono</label>
+            <input type="tel" id="telefonoTrabajador" />
+          </div>
+          <div class="form-group">
+            <label for="direccionTrabajador">Dirección</label>
+            <input type="text" id="direccionTrabajador" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-crear-trabajador">
+          ✅ Crear Trabajador
+        </button>
+      </form>
+      <div id="mensajeExito" class="mensaje-exito"></div>
+      <div id="mensajeError" class="mensaje-error"></div>
+    </div>
+
+    <!-- Sección: Lista de Trabajadores -->
+    <div class="admin-section">
+      <h2>👥 Trabajadores Registrados</h2>
+      <div class="lista-trabajadores" id="listaTrabajadores">
+        <p>Cargando trabajadores...</p>
+      </div>
+    </div>
+
+    <!-- Sección: Gestión de Horarios -->
+    <div class="admin-section">
+      <h2>🕐 Gestión de Horarios</h2>
+      
+      <!-- Selector de trabajador -->
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="selectTrabajadorHorario">Seleccionar Trabajador *</label>
+        <select id="selectTrabajadorHorario" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px;">
+          <option value="">-- Seleccione un trabajador --</option>
+        </select>
+      </div>
+
+      <!-- Botón para crear nuevo horario -->
+      <button type="button" class="btn-crear-trabajador" id="btnCrearHorario" style="margin-bottom: 1.5rem; display: none;">
+        ➕ Crear Nuevo Horario
+      </button>
+
+      <!-- Tabla de horarios -->
+      <div id="tablaHorarios" style="display: none;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+          <thead>
+            <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+              <th style="padding: 12px; text-align: left;">Turno</th>
+              <th style="padding: 12px; text-align: left;">Hora Inicio</th>
+              <th style="padding: 12px; text-align: left;">Hora Fin</th>
+              <th style="padding: 12px; text-align: left;">Estado</th>
+              <th style="padding: 12px; text-align: left;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyHorarios">
+            <!-- Los horarios se cargarán aquí dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="mensajeHorarios" style="margin-top: 1rem;"></div>
+    </div>
+  </div>
+
+  <!-- Modal para crear/editar horario -->
+  <div class="modal" id="modalHorario">
+    <div class="modal-content" style="max-width: 500px;">
+      <h3 id="modalHorarioTitulo">➕ Crear Horario</h3>
+      <form id="formHorario">
+        <input type="hidden" id="horarioId" />
+        <input type="hidden" id="horarioTrabajadorId" />
+        
+        <div class="form-group" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 1rem;">
+          <label style="font-weight: 600; color: #666; margin-bottom: 5px;">Trabajador:</label>
+          <div id="horarioTrabajadorNombre" style="font-size: 16px; color: #1a1a2e; font-weight: 600;">
+            <!-- Se mostrará el nombre del trabajador aquí -->
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="horarioTurno">Turno *</label>
+          <select id="horarioTurno" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+            <option value="">-- Seleccione un turno --</option>
+            <option value="Mañana">☀️ Mañana</option>
+            <option value="Tarde">🌤️ Tarde</option>
+            <option value="Noche">🌙 Noche</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="horarioHoraInicio">Hora Inicio *</label>
+          <input type="time" id="horarioHoraInicio" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;" />
+        </div>
+
+        <div class="form-group">
+          <label for="horarioHoraFin">Hora Fin *</label>
+          <input type="time" id="horarioHoraFin" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;" />
+        </div>
+
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" id="horarioActivo" style="width: 20px; height: 20px; cursor: pointer;" />
+            <span>Horario Activo</span>
+          </label>
+        </div>
+
+        <div class="modal-buttons">
+          <button type="submit" class="btn-crear-trabajador">
+            ✅ Guardar
+          </button>
+          <button type="button" class="btn-cerrar-modal" onclick="cerrarModalHorario()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+      <div id="mensajeErrorHorario" class="mensaje-error" style="margin-top: 1rem;"></div>
+    </div>
+  </div>
+
+  <!-- Modal para designar turno -->
+  <div class="modal" id="modalTurno">
+    <div class="modal-content">
+      <h3>🕐 Designar Turno</h3>
+      <p>Selecciona el turno para: <strong id="modalTrabajadorNombre"></strong></p>
+      <input type="hidden" id="modalTrabajadorId" />
+      
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <button class="btn-turno-option" data-turno="Mañana">
+          ☀️ Turno Mañana
+        </button>
+        <button class="btn-turno-option" data-turno="Tarde">
+          🌤️ Turno Tarde
+        </button>
+        <button class="btn-turno-option" data-turno="Noche">
+          🌙 Turno Noche
+        </button>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn-crear-trabajador" onclick="guardarTurno()" style="margin-top: 1rem;">
+          ✅ Guardar Turno
+        </button>
+        <button class="btn-cerrar-modal" onclick="cerrarModalTurno()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const apiBase = "http://localhost:3000/api";
+
+    // Verificar si hay sesión de admin al cargar
+    async function verificarSesionAdmin() {
+      try {
+        // Verificar localStorage primero
+        const adminLocal = localStorage.getItem("admin");
+        if (adminLocal) {
+          try {
+            const admin = JSON.parse(adminLocal);
+            if (admin.rol === "administrador") {
+              mostrarHeaderAdmin(admin);
+              return;
+            }
+          } catch (e) {
+            localStorage.removeItem("admin");
+          }
+        }
+
+        // Verificar cookie
+        const res = await fetch(apiBase + "/sesion/admin", {
+          credentials: "include"
+        });
+        const data = await res.json();
+
+        if (data.logueado && data.admin && data.admin.rol === "administrador") {
+          localStorage.setItem("admin", JSON.stringify(data.admin));
+          mostrarHeaderAdmin(data.admin);
+        } else {
+          document.getElementById("headerNav").style.display = "none";
+          document.querySelector(".login-container").style.display = "block";
+          document.body.classList.remove("logged-in");
+        }
+      } catch (err) {
+        console.error("Error al verificar sesión:", err);
+        document.getElementById("headerNav").style.display = "none";
+        document.querySelector(".login-container").style.display = "block";
+        document.body.classList.remove("logged-in");
+      }
+    }
+
+    function mostrarHeaderAdmin(admin) {
+      const headerNav = document.getElementById("headerNav");
+      const loginContainer = document.querySelector(".login-container");
+      const adminPanel = document.getElementById("adminPanel");
+      
+      if (headerNav) {
+        headerNav.style.display = "block";
+        document.body.classList.add("logged-in");
+        const adminName = document.getElementById("adminName");
+        if (adminName && admin.nombre) {
+          adminName.textContent = `👤 ${admin.nombre}`;
+        }
+      }
+      
+      if (loginContainer) {
+        loginContainer.style.display = "none";
+      }
+
+      if (adminPanel) {
+        adminPanel.style.display = "block";
+        cargarTrabajadores();
+        cargarTrabajadoresParaHorarios();
+      }
+    }
+
+    // Cerrar sesión
+    async function cerrarSesionAdmin() {
+      try {
+        localStorage.removeItem("admin");
+        
+        await fetch(apiBase + "/logout/admin", {
+          method: "POST",
+          credentials: "include"
+        });
+        
+        window.location.href = "http://localhost:3000/admin/admin.html";
+      } catch (err) {
+        console.error("Error al cerrar sesión:", err);
+        localStorage.removeItem("admin");
+        window.location.href = "http://localhost:3000/admin/admin.html";
+      }
+    }
+
+    // Crear trabajador
+    async function crearTrabajador(e) {
+      e.preventDefault();
+      
+      const nombre = document.getElementById("nombreTrabajador").value.trim();
+      const correo = document.getElementById("correoTrabajador").value.trim();
+      const contrasena = document.getElementById("contrasenaTrabajador").value;
+      const telefono = document.getElementById("telefonoTrabajador").value.trim();
+      const direccion = document.getElementById("direccionTrabajador").value.trim();
+
+      const mensajeExito = document.getElementById("mensajeExito");
+      const mensajeError = document.getElementById("mensajeError");
+
+      try {
+        const res = await fetch(apiBase + "/trabajadores", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombre,
+            correo,
+            contrasena,
+            telefono,
+            direccion
+          }),
+          credentials: "include"
+        });
+
+        const data = await res.json();
+
+        console.log("📥 Respuesta del servidor:", data);
+
+        if (res.ok) {
+          mensajeError.style.display = "none";
+          mensajeExito.textContent = "✅ " + data.message;
+          mensajeExito.style.display = "block";
+          
+          // Limpiar formulario
+          document.getElementById("formCrearTrabajador").reset();
+          
+          // Esperar un momento antes de recargar para asegurar que los datos estén guardados
+          setTimeout(() => {
+            cargarTrabajadores();
+          }, 500);
+          
+          // Ocultar mensaje después de 5 segundos
+          setTimeout(() => {
+            mensajeExito.style.display = "none";
+          }, 5000);
+        } else {
+          mensajeExito.style.display = "none";
+          mensajeError.textContent = "❌ " + (data.error || "Error al crear trabajador");
+          mensajeError.style.display = "block";
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        mensajeExito.style.display = "none";
+        mensajeError.textContent = "❌ Error al conectar con el servidor";
+        mensajeError.style.display = "block";
+      }
+    }
+
+    // Eliminar trabajador
+    async function eliminarTrabajador(id, nombre) {
+      if (!confirm(`¿Estás seguro de que deseas eliminar al trabajador "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+        return;
+      }
+
+      const mensajeError = document.getElementById("mensajeError");
+      const mensajeExito = document.getElementById("mensajeExito");
+
+      try {
+        console.log("🗑️ Eliminando trabajador ID:", id);
+        const url = apiBase + `/trabajadores/${id}`;
+        console.log("📡 URL:", url);
+
+        const res = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include"
+        });
+
+        console.log("📥 Respuesta recibida, status:", res.status);
+        console.log("📥 Content-Type:", res.headers.get("content-type"));
+
+        let data = {};
+        const contentType = res.headers.get("content-type");
+        
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            data = await res.json();
+            console.log("✅ JSON parseado correctamente:", data);
+          } catch (parseErr) {
+            console.error("❌ Error al parsear JSON:", parseErr);
+            const text = await res.text();
+            console.error("📄 Texto recibido:", text);
+            data = { error: "Error al procesar la respuesta del servidor" };
+          }
+        } else {
+          // Si no es JSON, intentar leer como texto
+          const text = await res.text();
+          console.log("📄 Respuesta texto (no JSON):", text);
+          if (text) {
+            try {
+              data = JSON.parse(text);
+            } catch (e) {
+              // Si no es JSON válido, crear un objeto con el texto
+              data = { 
+                message: text || (res.ok ? "Trabajador eliminado exitosamente" : "Error desconocido"),
+                error: !res.ok ? (text || "Error desconocido") : undefined
+              };
+            }
+          } else {
+            // Si no hay contenido, crear respuesta basada en el status
+            data = res.ok 
+              ? { message: "Trabajador eliminado exitosamente" }
+              : { error: `Error ${res.status}: ${res.statusText}` };
+          }
+        }
+
+        if (res.ok) {
+          mensajeError.style.display = "none";
+          mensajeExito.textContent = "✅ " + (data.message || "Trabajador eliminado exitosamente");
+          mensajeExito.style.display = "block";
+          
+          // Recargar lista de trabajadores
+          setTimeout(() => {
+            cargarTrabajadores();
+          }, 500);
+          
+          // Ocultar mensaje después de 3 segundos
+          setTimeout(() => {
+            mensajeExito.style.display = "none";
+          }, 3000);
+        } else {
+          mensajeExito.style.display = "none";
+          mensajeError.textContent = "❌ " + (data.error || `Error al eliminar trabajador (${res.status})`);
+          mensajeError.style.display = "block";
+          setTimeout(() => {
+            mensajeError.style.display = "none";
+          }, 5000);
+        }
+      } catch (err) {
+        console.error("❌ Error completo:", err);
+        console.error("❌ Stack:", err.stack);
+        mensajeExito.style.display = "none";
+        mensajeError.textContent = "❌ Error al conectar con el servidor: " + (err.message || "Error desconocido");
+        mensajeError.style.display = "block";
+        setTimeout(() => {
+          mensajeError.style.display = "none";
+        }, 5000);
+      }
+    }
+
+    // Modal para designar turno
+    function mostrarModalTurno(id, nombre) {
+      const modal = document.getElementById('modalTurno');
+      const modalNombre = document.getElementById('modalTrabajadorNombre');
+      const modalId = document.getElementById('modalTrabajadorId');
+      
+      modalNombre.textContent = nombre;
+      modalId.value = id;
+      
+      // Limpiar selección anterior
+      document.querySelectorAll('.btn-turno-option').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      modal.style.display = 'flex';
+    }
+
+    function cerrarModalTurno() {
+      const modal = document.getElementById('modalTurno');
+      modal.style.display = 'none';
+    }
+
+    // Almacenar turnos en memoria (no en base de datos)
+    let turnosTrabajadores = {};
+
+    function guardarTurno() {
+      const id = document.getElementById('modalTrabajadorId').value;
+      const turnoSeleccionado = document.querySelector('.btn-turno-option.selected');
+      
+      if (!turnoSeleccionado) {
+        alert('Por favor selecciona un turno');
+        return;
+      }
+
+      const turno = turnoSeleccionado.getAttribute('data-turno');
+      
+      // Guardar turno en memoria (no en base de datos)
+      turnosTrabajadores[id] = turno;
+      
+      // Actualizar la visualización inmediatamente
+      actualizarTurnoEnUI(id, turno);
+      
+      // Cerrar modal
+      cerrarModalTurno();
+      
+      // Mostrar mensaje de éxito
+      const mensajeExito = document.getElementById("mensajeExito");
+      mensajeExito.textContent = "✅ Turno asignado: " + turno;
+      mensajeExito.style.display = "block";
+      
+      setTimeout(() => {
+        mensajeExito.style.display = "none";
+      }, 3000);
+    }
+
+    function actualizarTurnoEnUI(trabajadorId, turno) {
+      const trabajadorCard = document.getElementById(`trabajador-${trabajadorId}`);
+      if (!trabajadorCard) return;
+      
+      const nombreElement = trabajadorCard.querySelector('h3');
+      if (!nombreElement) return;
+      
+      // Remover badge anterior si existe
+      const badgeAnterior = nombreElement.querySelector('.turno-badge');
+      if (badgeAnterior) {
+        badgeAnterior.remove();
+      }
+      
+      // Agregar nuevo badge
+      if (turno) {
+        const turnoBadge = document.createElement('span');
+        turnoBadge.className = `turno-badge ${turno.toLowerCase()}`;
+        turnoBadge.textContent = turno;
+        nombreElement.appendChild(turnoBadge);
+      }
+    }
+
+    // Event listeners para opciones de turno
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('btn-turno-option')) {
+        document.querySelectorAll('.btn-turno-option').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        e.target.classList.add('selected');
+      }
+    });
+
+    // Cargar lista de trabajadores
+    async function cargarTrabajadores() {
+      const listaContainer = document.getElementById("listaTrabajadores");
+      
+      try {
+        const res = await fetch(apiBase + "/trabajadores", {
+          credentials: "include"
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok && data.trabajadores) {
+          if (data.trabajadores.length === 0) {
+            listaContainer.innerHTML = "<p style='color: #666;'>No hay trabajadores registrados aún.</p>";
+            return;
+          }
+          
+          listaContainer.innerHTML = data.trabajadores.map(trabajador => {
+            const nombreEscapado = trabajador.nombre.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            // Obtener turno de la memoria (no de la base de datos)
+            const turno = turnosTrabajadores[trabajador.id] || null;
+            const turnoBadge = turno 
+              ? `<span class="turno-badge ${turno.toLowerCase()}">${turno}</span>`
+              : '';
+            return `
+              <div class="trabajador-card" id="trabajador-${trabajador.id}">
+                <div class="trabajador-info-container">
+                  <h3>${trabajador.nombre}${turnoBadge}</h3>
+                  <div class="trabajador-info">📧 ${trabajador.correo}</div>
+                  ${trabajador.telefono ? `<div class="trabajador-info">📞 ${trabajador.telefono}</div>` : ''}
+                  ${trabajador.direccion ? `<div class="trabajador-info">📍 ${trabajador.direccion}</div>` : ''}
+                </div>
+                <div class="trabajador-acciones">
+                  <button class="btn-eliminar-trabajador" data-id="${trabajador.id}" data-nombre="${nombreEscapado}">
+                    🗑️ Eliminar
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('');
+          
+          // Agregar event listeners a los botones de eliminar
+          setTimeout(() => {
+            document.querySelectorAll('.btn-eliminar-trabajador').forEach(btn => {
+              btn.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const nombre = this.getAttribute('data-nombre');
+                eliminarTrabajador(id, nombre);
+              });
+            });
+          }, 100);
+        } else {
+          listaContainer.innerHTML = "<p style='color: #dc3545;'>Error al cargar trabajadores.</p>";
+        }
+      } catch (err) {
+        console.error("Error al cargar trabajadores:", err);
+        listaContainer.innerHTML = "<p style='color: #dc3545;'>Error al conectar con el servidor.</p>";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      verificarSesionAdmin();
+      
+      const logoutBtn = document.getElementById("logoutAdminBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", cerrarSesionAdmin);
+      }
+
+      const formCrearTrabajador = document.getElementById("formCrearTrabajador");
+      if (formCrearTrabajador) {
+        formCrearTrabajador.addEventListener("submit", crearTrabajador);
+      }
+
+      // Event listeners para gestión de horarios
+      const selectTrabajadorHorario = document.getElementById("selectTrabajadorHorario");
+      if (selectTrabajadorHorario) {
+        selectTrabajadorHorario.addEventListener("change", function() {
+          const trabajadorId = this.value;
+          if (trabajadorId) {
+            document.getElementById("btnCrearHorario").style.display = "block";
+            document.getElementById("tablaHorarios").style.display = "block";
+            cargarHorariosTrabajador(trabajadorId);
+          } else {
+            document.getElementById("btnCrearHorario").style.display = "none";
+            document.getElementById("tablaHorarios").style.display = "none";
+            document.getElementById("tbodyHorarios").innerHTML = "";
+          }
+        });
+      }
+
+      const btnCrearHorario = document.getElementById("btnCrearHorario");
+      if (btnCrearHorario) {
+        btnCrearHorario.addEventListener("click", abrirModalCrearHorario);
+      }
+
+      const formHorario = document.getElementById("formHorario");
+      if (formHorario) {
+        formHorario.addEventListener("submit", guardarHorario);
+      }
+    });
+
+    // ========== FUNCIONES DE GESTIÓN DE HORARIOS ==========
+
+    // Cargar trabajadores en el select de horarios
+    async function cargarTrabajadoresParaHorarios() {
+      const select = document.getElementById("selectTrabajadorHorario");
+      if (!select) return;
+
+      try {
+        const res = await fetch(apiBase + "/trabajadores", {
+          credentials: "include"
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok && data.trabajadores) {
+          select.innerHTML = '<option value="">-- Seleccione un trabajador --</option>';
+          data.trabajadores.forEach(trabajador => {
+            const option = document.createElement("option");
+            option.value = trabajador.id;
+            option.textContent = trabajador.nombre;
+            select.appendChild(option);
+          });
+        }
+      } catch (err) {
+        console.error("Error al cargar trabajadores para horarios:", err);
+      }
+    }
+
+    // Cargar horarios de un trabajador
+    async function cargarHorariosTrabajador(trabajadorId) {
+      const tbody = document.getElementById("tbodyHorarios");
+      const mensaje = document.getElementById("mensajeHorarios");
+      
+      if (!tbody) return;
+
+      try {
+        const res = await fetch(apiBase + `/horarios?trabajador_id=${trabajadorId}`, {
+          credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.horarios) {
+          if (data.horarios.length === 0) {
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
+                  No hay horarios registrados para este trabajador.
+                </td>
+              </tr>
+            `;
+            mensaje.innerHTML = "";
+            return;
+          }
+
+          tbody.innerHTML = data.horarios.map(horario => `
+            <tr style="border-bottom: 1px solid #dee2e6;">
+              <td style="padding: 12px;">
+                <span class="turno-badge ${horario.turno ? horario.turno.toLowerCase() : ''}">${horario.turno || 'N/A'}</span>
+              </td>
+              <td style="padding: 12px;">${horario.hora_inicio || 'N/A'}</td>
+              <td style="padding: 12px;">${horario.hora_fin || 'N/A'}</td>
+              <td style="padding: 12px;">
+                <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; ${horario.activo ? 'background: #d4edda; color: #155724;' : 'background: #f8d7da; color: #721c24;'}">
+                  ${horario.activo ? '✅ Activo' : '❌ Inactivo'}
+                </span>
+              </td>
+              <td style="padding: 12px;">
+                <button onclick="editarHorario(${horario.id})" style="padding: 5px 10px; font-size: 12px; margin-right: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  ✏️ Editar
+                </button>
+                <button class="btn-eliminar-trabajador" onclick="eliminarHorario(${horario.id})" style="padding: 5px 10px; font-size: 12px;">
+                  🗑️ Eliminar
+                </button>
+              </td>
+            </tr>
+          `).join('');
+          mensaje.innerHTML = "";
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 20px; color: #dc3545;">
+                Error al cargar horarios: ${data.error || "Error desconocido"}
+              </td>
+            </tr>
+          `;
+        }
+      } catch (err) {
+        console.error("Error al cargar horarios:", err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 20px; color: #dc3545;">
+              Error al conectar con el servidor: ${err.message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Abrir modal para crear horario
+    function abrirModalCrearHorario() {
+      const selectTrabajador = document.getElementById("selectTrabajadorHorario");
+      const trabajadorId = selectTrabajador.value;
+      
+      if (!trabajadorId) {
+        alert("Por favor, seleccione un trabajador primero.");
+        return;
+      }
+
+      // Obtener el nombre del trabajador seleccionado
+      const trabajadorNombre = selectTrabajador.options[selectTrabajador.selectedIndex].text;
+
+      document.getElementById("horarioId").value = "";
+      document.getElementById("horarioTrabajadorId").value = trabajadorId;
+      document.getElementById("horarioTrabajadorNombre").textContent = "👤 " + trabajadorNombre;
+      document.getElementById("horarioTurno").value = "";
+      document.getElementById("horarioHoraInicio").value = "";
+      document.getElementById("horarioHoraFin").value = "";
+      document.getElementById("horarioActivo").checked = true;
+      document.getElementById("modalHorarioTitulo").textContent = "➕ Crear Horario para: " + trabajadorNombre;
+      document.getElementById("mensajeErrorHorario").textContent = "";
+      document.getElementById("mensajeErrorHorario").style.display = "none";
+      document.getElementById("modalHorario").style.display = "flex";
+    }
+
+    // Editar horario
+    async function editarHorario(horarioId) {
+      try {
+        const trabajadorId = document.getElementById("selectTrabajadorHorario").value;
+        const selectTrabajador = document.getElementById("selectTrabajadorHorario");
+        const trabajadorNombre = selectTrabajador.options[selectTrabajador.selectedIndex].text;
+        
+        const res = await fetch(apiBase + `/horarios?trabajador_id=${trabajadorId}`, {
+          credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.horarios) {
+          const horario = data.horarios.find(h => h.id === horarioId);
+          if (horario) {
+            document.getElementById("horarioId").value = horario.id;
+            document.getElementById("horarioTrabajadorId").value = horario.trabajador_id;
+            document.getElementById("horarioTrabajadorNombre").textContent = "👤 " + (horario.trabajador_nombre || trabajadorNombre);
+            document.getElementById("horarioTurno").value = horario.turno;
+            document.getElementById("horarioHoraInicio").value = horario.hora_inicio;
+            document.getElementById("horarioHoraFin").value = horario.hora_fin;
+            document.getElementById("horarioActivo").checked = horario.activo === true || horario.activo === 'true';
+            document.getElementById("modalHorarioTitulo").textContent = "✏️ Editar Horario de: " + (horario.trabajador_nombre || trabajadorNombre);
+            document.getElementById("mensajeErrorHorario").textContent = "";
+            document.getElementById("mensajeErrorHorario").style.display = "none";
+            document.getElementById("modalHorario").style.display = "flex";
+          }
+        }
+      } catch (err) {
+        console.error("Error al cargar horario para editar:", err);
+        alert("Error al cargar el horario: " + err.message);
+      }
+    }
+
+    // Guardar horario (crear o actualizar)
+    async function guardarHorario(e) {
+      e.preventDefault();
+
+      const horarioId = document.getElementById("horarioId").value;
+      const trabajadorId = document.getElementById("horarioTrabajadorId").value;
+      const turno = document.getElementById("horarioTurno").value;
+      const horaInicio = document.getElementById("horarioHoraInicio").value;
+      const horaFin = document.getElementById("horarioHoraFin").value;
+      const activo = document.getElementById("horarioActivo").checked;
+
+      const mensajeError = document.getElementById("mensajeErrorHorario");
+
+      if (!trabajadorId || !turno || !horaInicio || !horaFin) {
+        mensajeError.textContent = "⚠️ Todos los campos son obligatorios.";
+        mensajeError.style.display = "block";
+        return;
+      }
+
+      try {
+        const url = horarioId 
+          ? apiBase + `/horarios/${horarioId}`
+          : apiBase + "/horarios";
+        
+        const method = horarioId ? "PUT" : "POST";
+
+        const res = await fetch(url, {
+          method: method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            trabajador_id: parseInt(trabajadorId),
+            turno,
+            hora_inicio: horaInicio,
+            hora_fin: horaFin,
+            activo: activo
+          }),
+          credentials: "include"
+        });
+
+        // Verificar el Content-Type antes de parsear
+        const contentType = res.headers.get("content-type");
+        let data = {};
+
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            data = await res.json();
+          } catch (parseErr) {
+            console.error("❌ Error al parsear JSON:", parseErr);
+            const text = await res.text();
+            console.error("📄 Texto recibido:", text.substring(0, 200));
+            mensajeError.textContent = "❌ Error al procesar la respuesta del servidor.";
+            mensajeError.style.display = "block";
+            return;
+          }
+        } else {
+          const text = await res.text();
+          console.error("❌ Respuesta no es JSON:", text.substring(0, 200));
+          mensajeError.textContent = "❌ El servidor devolvió una respuesta no válida. Verifica la consola para más detalles.";
+          mensajeError.style.display = "block";
+          return;
+        }
+
+        if (res.ok) {
+          mensajeError.style.display = "none";
+          cerrarModalHorario();
+          cargarHorariosTrabajador(trabajadorId);
+          cargarTrabajadoresParaHorarios();
+          
+          // Mostrar mensaje de éxito
+          const mensajeHorarios = document.getElementById("mensajeHorarios");
+          mensajeHorarios.innerHTML = `<div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin-top: 1rem;">
+            ✅ ${data.message || "Horario guardado exitosamente para el trabajador seleccionado."}
+          </div>`;
+          setTimeout(() => {
+            mensajeHorarios.innerHTML = "";
+          }, 3000);
+        } else {
+          mensajeError.textContent = "❌ " + (data.error || "Error al guardar horario");
+          mensajeError.style.display = "block";
+        }
+      } catch (err) {
+        console.error("Error al guardar horario:", err);
+        mensajeError.textContent = "❌ Error al conectar con el servidor: " + err.message;
+        mensajeError.style.display = "block";
+      }
+    }
+
+    // Eliminar horario
+    async function eliminarHorario(horarioId) {
+      if (!confirm("¿Estás seguro de que deseas eliminar este horario?")) {
+        return;
+      }
+
+      try {
+        const res = await fetch(apiBase + `/horarios/${horarioId}`, {
+          method: "DELETE",
+          credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          const trabajadorId = document.getElementById("selectTrabajadorHorario").value;
+          cargarHorariosTrabajador(trabajadorId);
+        } else {
+          alert("Error al eliminar horario: " + (data.error || "Error desconocido"));
+        }
+      } catch (err) {
+        console.error("Error al eliminar horario:", err);
+        alert("Error al conectar con el servidor: " + err.message);
+      }
+    }
+
+    // Cerrar modal de horario
+    function cerrarModalHorario() {
+      document.getElementById("modalHorario").style.display = "none";
+      document.getElementById("formHorario").reset();
+    }
+
+    document.getElementById("adminLoginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const correo = document.getElementById("correo").value.trim();
+      const contrasena = document.getElementById("contrasena").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      try {
+        const res = await fetch(apiBase + "/login/admin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ correo, contrasena }),
+          credentials: "include",
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.logueado) {
+          // Verificar que sea rol administrador
+          if (data.admin && data.admin.rol === "administrador") {
+            localStorage.setItem("admin", JSON.stringify(data.admin));
+            
+            msg.textContent = "✅ Bienvenido Administrador";
+            msg.className = "success";
+
+            setTimeout(() => {
+              window.location.href = "http://localhost:4000/admin/menu_admin.html";
+            }, 1500);
+          } else {
+            msg.textContent = "❌ No tienes permisos de administrador";
+            msg.className = "error";
+          }
+        } else {
+          msg.textContent = data.error || "❌ Error en el inicio de sesión";
+          msg.className = "error";
+        }
+      } catch (err) {
+        msg.textContent = "❌ Error al conectar con el servidor";
+        msg.className = "error";
+      }
+    });
+  </script>
+</body>
+</html>

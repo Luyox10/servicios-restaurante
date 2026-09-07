@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administrar Menú | La Mamasa</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      padding: 1.2rem 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .nav-header-left {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .nav-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.8rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links a.active {
+      background-color: rgba(255, 255, 255, 0.4);
+      font-weight: bold;
+    }
+    
+    .user-icon-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 20px;
+    }
+    
+    .user-icon-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    
+    .user-icon-link:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .user-icon {
+      font-size: 24px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    section {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      animation: fadeIn 0.5s ease;
+    }
+
+    h2 {
+      color: #8b0000;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      border-bottom: 3px solid #8b0000;
+      padding-bottom: 0.5rem;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    input, select, textarea {
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #8b0000;
+      box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+    }
+
+    textarea {
+      grid-column: 1 / -1;
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(139, 0, 0, 0.3);
+      grid-column: 1 / -1;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(139, 0, 0, 0.4);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      border-bottom: 1px solid #e8e8e8;
+      padding: 1rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background-color: #f8f9fa;
+      transform: scale(1.01);
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    tbody tr:nth-child(even):hover {
+      background-color: #f0f0f0;
+    }
+
+    img {
+      border-radius: 8px;
+      max-width: 100px;
+      height: auto;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    button[onclick*="eliminar"] {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      grid-column: auto;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+    }
+
+    button[onclick*="eliminar"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-editar {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      grid-column: auto;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+      margin-right: 0.5rem;
+    }
+
+    .btn-editar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-acciones {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 5% auto;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      animation: slideDown 0.3s ease;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+      transition: color 0.3s;
+      background: none;
+      border: none;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-modal:hover {
+      color: #8b0000;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-header">
+      <div class="nav-header-left">
+        <h1>🍽️ La Mamasa - Administración</h1>
+        <nav class="nav-links">
+          <a href="http://localhost:3000/admin/admin.html">👤 Usuarios</a>
+          <a href="http://localhost:4000/admin/menu_admin.html" class="active">🍽️ Menú</a>
+          <a href="http://localhost:4001/admin">📦 Pedidos</a>
+          <a href="http://localhost:4002/admin/pagos.html">💳 Pagos</a>
+          <a href="http://localhost:4004/admin">📅 Reservas</a>
+        </nav>
+      </div>
+      <div class="user-icon-container">
+        <a href="http://localhost:3000/admin/admin.html" class="user-icon-link">
+          <span class="user-icon">👤</span>
+          <span>Admin</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>📁 Gestión de Categorías</h2>
+      <p style="color: #666; margin-bottom: 1.5rem;">Crea y gestiona las categorías para organizar tus platos</p>
+      
+      <form id="formCategoria" style="max-width: 600px; margin-bottom: 2rem;">
+        <input type="text" id="nombreCategoria" placeholder="Nombre de la categoría (ej: Desayunos, Entradas, etc.)" required />
+        <textarea id="descripcionCategoria" placeholder="Descripción (opcional)"></textarea>
+        <button type="submit">➕ Crear Categoría</button>
+      </form>
+      
+      <div class="table-container" style="margin-top: 2rem;">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaCategorias"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>➕ Agregar nuevo plato</h2>
+      <form id="formPlato" enctype="multipart/form-data">
+        <input type="text" id="nombre" placeholder="Nombre del plato" required />
+        <textarea id="descripcion" placeholder="Descripción del plato"></textarea>
+        <input type="number" id="precio" placeholder="Precio (S/.)" step="0.01" required />
+        <input type="file" id="imagen" name="imagen" accept="image/*" />
+        <select id="categoria" required>
+          <option value="">Seleccionar categoría</option>
+        </select>
+        <button type="submit">➕ Agregar Plato</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>📋 Lista de Platos</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaPlatos">
+            <tr>
+              <td colspan="5" class="empty-state">Cargando platos...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal para editar plato -->
+  <div id="modalEditar" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="cerrarModalEditar()">&times;</button>
+      <h2>✏️ Editar Plato</h2>
+      <form id="formEditarPlato" enctype="multipart/form-data">
+        <input type="hidden" id="editarId" />
+        <input type="text" id="editarNombre" placeholder="Nombre del plato" required />
+        <textarea id="editarDescripcion" placeholder="Descripción"></textarea>
+        <input type="number" id="editarPrecio" placeholder="Precio (S/.)" step="0.01" required />
+        <select id="editarCategoria" required>
+          <option value="">Seleccionar categoría</option>
+        </select>
+        <input type="file" id="editarImagen" name="imagen" accept="image/*" />
+        <div style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+          <small>💡 Deja el campo de imagen vacío si no quieres cambiar la imagen actual</small>
+        </div>
+        <div id="imagenActual" style="margin: 10px 0;"></div>
+        <div style="display: flex; gap: 10px; margin-top: 1rem;">
+          <button type="button" onclick="cerrarModalEditar()" style="background: #6c757d; flex: 1;">Cancelar</button>
+          <button type="submit" style="flex: 1;">💾 Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_PLATOS = "http://localhost:4000/api/menu";
+    const API_CATEGORIAS = "http://localhost:4000/api/categorias";
+
+    // 🔹 Cargar categorías
+    async function cargarCategorias() {
+      try {
+        const tabla = document.getElementById("tablaCategorias");
+        const selectCategoria = document.getElementById("categoria");
+        const selectEditCategoria = document.getElementById("editarCategoria");
+        
+        if (!tabla || !selectCategoria) {
+          console.warn("⚠️ Elementos de categorías no encontrados");
+          return;
+        }
+        
+        const res = await fetch(API_CATEGORIAS);
+        
+        if (!res.ok) {
+          if (res.status === 404) {
+            tabla.innerHTML = `
+              <tr>
+                <td colspan="3" style="text-align: center; padding: 2rem; color: #999;">
+                  No hay categorías creadas. Crea una nueva categoría arriba.
+                </td>
+              </tr>
+            `;
+            selectCategoria.innerHTML = '<option value="">Seleccionar categoría</option>';
+            if (selectEditCategoria) {
+              selectEditCategoria.innerHTML = '<option value="">Seleccionar categoría</option>';
+            }
+            return;
+          }
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+        
+        const categorias = await res.json();
+        
+        // Limpiar tabla
+        tabla.innerHTML = "";
+        
+        // Limpiar selects y agregar opción por defecto
+        selectCategoria.innerHTML = '<option value="">Seleccionar categoría</option>';
+        if (selectEditCategoria) {
+          selectEditCategoria.innerHTML = '<option value="">Seleccionar categoría</option>';
+        }
+        
+        if (!categorias || categorias.length === 0) {
+          tabla.innerHTML = `
+            <tr>
+              <td colspan="3" style="text-align: center; padding: 2rem; color: #999;">
+                No hay categorías creadas. Crea una nueva categoría arriba.
+              </td>
+            </tr>
+          `;
+        } else {
+          // Mostrar categorías en la tabla
+          categorias.forEach(categoria => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td><strong>${categoria.nombre || "-"}</strong></td>
+              <td>${categoria.descripcion || "-"}</td>
+              <td>
+                <button onclick="eliminarCategoria('${categoria._id}')" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); padding: 0.5rem 1rem; font-size: 0.9rem; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">🗑️ Eliminar</button>
+              </td>
+            `;
+            tabla.appendChild(tr);
+          });
+          
+          // Agregar categorías a los selects
+          categorias.forEach(categoria => {
+            const option = document.createElement("option");
+            option.value = categoria.nombre;
+            option.textContent = categoria.nombre;
+            selectCategoria.appendChild(option);
+            
+            if (selectEditCategoria) {
+              const optionEdit = document.createElement("option");
+              optionEdit.value = categoria.nombre;
+              optionEdit.textContent = categoria.nombre;
+              selectEditCategoria.appendChild(optionEdit);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("❌ Error cargando categorías:", error);
+        const tabla = document.getElementById("tablaCategorias");
+        if (tabla) {
+          tabla.innerHTML = `
+            <tr>
+              <td colspan="3" style="text-align: center; padding: 2rem; color: #dc3545;">
+                ⚠️ Error al cargar las categorías. Verifica que el servidor esté corriendo.
+              </td>
+            </tr>
+          `;
+        }
+      }
+    }
+
+    // 🔹 Crear categoría
+    document.getElementById("formCategoria").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nombre = document.getElementById("nombreCategoria").value.trim();
+      const descripcion = document.getElementById("descripcionCategoria").value.trim();
+
+      if (!nombre) {
+        alert("❌ El nombre de la categoría es requerido");
+        return;
+      }
+
+      try {
+        const res = await fetch(API_CATEGORIAS, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            nombre,
+            descripcion: descripcion || undefined
+          })
+        });
+
+        if (res.ok) {
+          alert("✅ Categoría creada con éxito");
+          e.target.reset();
+          cargarCategorias();
+        } else {
+          const error = await res.json();
+          throw new Error(error.error || "Error al crear categoría");
+        }
+      } catch (error) {
+        console.error("Error creando categoría:", error);
+        alert(`❌ Error al crear categoría: ${error.message}`);
+      }
+    });
+
+    // 🔹 Eliminar categoría
+    async function eliminarCategoria(id) {
+      if (!confirm("¿Estás seguro de que quieres eliminar esta categoría?\n\n⚠️ Esta acción no se puede deshacer.")) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_CATEGORIAS}/${id}`, {
+          method: "DELETE"
+        });
+
+        if (res.ok) {
+          alert("✅ Categoría eliminada correctamente");
+          cargarCategorias();
+        } else {
+          const error = await res.json();
+          throw new Error(error.error || "Error al eliminar categoría");
+        }
+      } catch (error) {
+        console.error("Error eliminando categoría:", error);
+        alert(`❌ Error al eliminar categoría: ${error.message}`);
+      }
+    }
+
+    // 🔹 Cargar platos
+    async function cargarPlatos() {
+      try {
+        const res = await fetch(API_PLATOS);
+        if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
+        
+        const platos = await res.json();
+        const tabla = document.getElementById("tablaPlatos");
+        tabla.innerHTML = "";
+
+        if (!platos || platos.length === 0) {
+          tabla.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty-state">
+                No hay platos disponibles. Agrega un nuevo plato arriba.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        platos.forEach(plato => {
+          const tr = document.createElement("tr");
+          const imagenUrl = plato.imagen ? `http://localhost:4000${plato.imagen}` : 'https://via.placeholder.com/100?text=Sin+Imagen';
+          tr.innerHTML = `
+            <td>
+              <img src="${imagenUrl}" alt="${plato.nombre}" style="max-width: 100px; height: auto; border-radius: 8px;" onerror="this.src='https://via.placeholder.com/100?text=Sin+Imagen'" />
+            </td>
+            <td><strong>${plato.nombre || "-"}</strong></td>
+            <td>${plato.categoria || "-"}</td>
+            <td>S/ ${plato.precio ? plato.precio.toFixed(2) : "0.00"}</td>
+            <td>
+              <div class="btn-acciones">
+                <button class="btn-editar" onclick="editarPlato('${plato._id}')">✏️ Editar</button>
+                <button onclick="eliminarPlato('${plato._id}')">🗑️ Eliminar</button>
+              </div>
+            </td>
+          `;
+          tabla.appendChild(tr);
+        });
+      } catch (error) {
+        console.error("❌ Error cargando platos:", error);
+        const tabla = document.getElementById("tablaPlatos");
+        tabla.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty-state" style="color: #dc3545;">
+              ❌ Error al cargar los platos: ${error.message}<br>
+              <small>Verifica que el servidor esté corriendo en http://localhost:4000</small>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // 🔹 Agregar plato (con imagen)
+    document.getElementById("formPlato").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append("nombre", document.getElementById("nombre").value);
+      formData.append("descripcion", document.getElementById("descripcion").value);
+      formData.append("precio", parseFloat(document.getElementById("precio").value));
+      formData.append("categoria", document.getElementById("categoria").value);
+
+      const imagenFile = document.getElementById("imagen").files[0];
+      if (imagenFile) {
+        formData.append("imagen", imagenFile);
+      }
+
+      try {
+        const res = await fetch(API_PLATOS, {
+          method: "POST",
+          body: formData
+        });
+
+        if (res.ok) {
+          alert("✅ Plato agregado con éxito");
+          e.target.reset();
+          cargarPlatos();
+        } else {
+          const error = await res.json().catch(() => ({ error: "Error desconocido" }));
+          throw new Error(error.error || "Error al agregar plato");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("❌ Error al agregar plato: " + error.message);
+      }
+    });
+
+    // 🔹 Editar plato - Abrir modal
+    async function editarPlato(id) {
+      try {
+        // Cargar datos del plato
+        const res = await fetch(`${API_PLATOS}/${id}`);
+        if (!res.ok) throw new Error("Error al cargar el plato");
+        
+        const plato = await res.json();
+        
+        // Llenar el formulario
+        document.getElementById("editarId").value = plato._id;
+        document.getElementById("editarNombre").value = plato.nombre || "";
+        document.getElementById("editarDescripcion").value = plato.descripcion || "";
+        document.getElementById("editarPrecio").value = plato.precio || "";
+        
+        // Cargar categorías en el select de edición
+        const selectEditCategoria = document.getElementById("editarCategoria");
+        selectEditCategoria.innerHTML = '<option value="">Seleccionar categoría</option>';
+        
+        const categoriasRes = await fetch(API_CATEGORIAS);
+        if (categoriasRes.ok) {
+          const categorias = await categoriasRes.json();
+          categorias.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat.nombre;
+            option.textContent = cat.nombre;
+            if (cat.nombre === plato.categoria) {
+              option.selected = true;
+            }
+            selectEditCategoria.appendChild(option);
+          });
+        }
+        
+        // Mostrar imagen actual
+        const imagenActualDiv = document.getElementById("imagenActual");
+        if (plato.imagen) {
+          imagenActualDiv.innerHTML = `
+            <div style="margin-top: 10px;">
+              <strong>Imagen actual:</strong><br>
+              <img src="http://localhost:4000${plato.imagen}" alt="${plato.nombre}" style="max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+            </div>
+          `;
+        } else {
+          imagenActualDiv.innerHTML = "";
+        }
+        
+        // Mostrar modal
+        document.getElementById("modalEditar").style.display = "block";
+      } catch (error) {
+        console.error("Error cargando plato:", error);
+        alert("❌ Error al cargar el plato: " + error.message);
+      }
+    }
+    
+    // 🔹 Cerrar modal de edición
+    function cerrarModalEditar() {
+      document.getElementById("modalEditar").style.display = "none";
+      document.getElementById("formEditarPlato").reset();
+      document.getElementById("imagenActual").innerHTML = "";
+      document.getElementById("editarImagen").value = "";
+    }
+    
+    // 🔹 Actualizar plato
+    document.getElementById("formEditarPlato").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const id = document.getElementById("editarId").value;
+      const formData = new FormData();
+      
+      formData.append("nombre", document.getElementById("editarNombre").value.trim());
+      formData.append("descripcion", document.getElementById("editarDescripcion").value.trim());
+      formData.append("precio", document.getElementById("editarPrecio").value);
+      formData.append("categoria", document.getElementById("editarCategoria").value);
+      
+      const imagenFile = document.getElementById("editarImagen").files[0];
+      if (imagenFile) {
+        formData.append("imagen", imagenFile);
+      }
+      
+      try {
+        const res = await fetch(`${API_PLATOS}/${id}`, {
+          method: "PUT",
+          body: formData
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          alert("✅ Plato actualizado con éxito");
+          cerrarModalEditar();
+          cargarPlatos();
+        } else {
+          const error = await res.json().catch(() => ({ error: "Error desconocido" }));
+          throw new Error(error.error || "Error al actualizar plato");
+        }
+      } catch (error) {
+        console.error("Error actualizando plato:", error);
+        alert("❌ Error al actualizar plato: " + error.message);
+      }
+    });
+
+    // 🔹 Eliminar plato
+    async function eliminarPlato(id) {
+      if (!confirm("¿Estás seguro de que quieres eliminar este plato?\n\n⚠️ Esta acción no se puede deshacer.")) return;
+      
+      try {
+        const res = await fetch(`${API_PLATOS}/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          alert("✅ Plato eliminado correctamente");
+          cargarPlatos();
+        } else {
+          const error = await res.json().catch(() => ({ error: "Error desconocido" }));
+          throw new Error(error.error || "Error al eliminar");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("❌ Error al eliminar: " + error.message);
+      }
+    }
+
+    // Cerrar modal al hacer click fuera
+    window.onclick = function(event) {
+      const modal = document.getElementById("modalEditar");
+      if (event.target === modal) {
+        cerrarModalEditar();
+      }
+    }
+
+    // 🔹 Inicializar
+    cargarCategorias();
+    cargarPlatos();
+    
+    // Exponer funciones globalmente
+    window.eliminarCategoria = eliminarCategoria;
+    window.eliminarPlato = eliminarPlato;
+    window.editarPlato = editarPlato;
+    window.cerrarModalEditar = cerrarModalEditar;
+  </script>
+</body>
+</html>

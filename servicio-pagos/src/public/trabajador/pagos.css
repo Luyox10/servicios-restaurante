@@ -1,0 +1,328 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.nav-header-left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.nav-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 1.8rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 15px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nav-links a.active {
+  background-color: rgba(255, 255, 255, 0.4);
+  font-weight: bold;
+}
+
+.user-icon-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 20px;
+}
+
+.user-icon-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  text-decoration: none;
+  padding: 10px 18px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 25px;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.user-icon-link:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.user-icon {
+  font-size: 24px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.content h1 { 
+  text-align: center; 
+  color: #28a745;
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+  color: white;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card.total-periodo { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.stat-card.total-general { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.stat-card.total-pendientes { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.stat-card.total-completados { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+
+.stat-icon { font-size: 3rem; opacity: 0.9; }
+.stat-content { flex: 1; }
+.stat-content h3 { margin: 0 0 0.5rem 0; font-size: 1rem; opacity: 0.9; font-weight: 500; }
+.stat-value { font-size: 2rem; font-weight: bold; margin: 0.5rem 0; }
+.stat-label { font-size: 0.85rem; opacity: 0.8; }
+
+.filtros-container {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-container h3 {
+  color: #28a745;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.filtros-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.filtro-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 160px;
+}
+
+.filtro-group label {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.filtro-group input, .filtro-group select {
+  padding: 10px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.filtro-group input:focus, .filtro-group select:focus {
+  outline: none;
+  border-color: #28a745;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+.filtro-buttons {
+  display: flex;
+  gap: 0.8rem;
+  margin-left: auto;
+}
+
+.btn-filtrar, .btn-limpiar {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-filtrar {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+}
+
+.btn-filtrar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.btn-limpiar {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+}
+
+.btn-limpiar:hover {
+  transform: translateY(-2px);
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+td {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.estado-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.estado-pendiente { background: #fff3cd; color: #856404; }
+.estado-completado { background: #d4edda; color: #155724; }
+
+button.confirmar {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+button.confirmar:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+button.confirmar:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.sort-icon {
+  cursor: pointer;
+  margin-left: 5px;
+  font-size: 1rem;
+  display: inline-block;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.sort-icon:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+.sort-icon.asc::after {
+  content: " ↑";
+}
+
+.sort-icon.desc::after {
+  content: " ↓";
+}
+
+.sort-icon.asc, .sort-icon.desc {
+  font-weight: bold;
+}
+

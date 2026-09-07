@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Notificaciones - Admin</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .nav-header {
+      background: linear-gradient(135deg, #8b0000 0%, #a52a2a 100%);
+      color: white;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .nav-header-left {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .nav-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 1.8rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-links a.active {
+      background-color: rgba(255, 255, 255, 0.4);
+      font-weight: bold;
+    }
+    
+    .user-icon-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 20px;
+    }
+    
+    .user-icon-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 18px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 15px;
+    }
+    
+    .user-icon-link:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .user-icon {
+      font-size: 24px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header">
+    <div class="nav-header-left">
+      <h1>🍽️ La Mamasa - Administración</h1>
+      <nav class="nav-links">
+        <a href="http://localhost:3000/admin/admin.html">👤 Usuarios</a>
+        <a href="http://localhost:4000/admin/menu_admin.html">🍽️ Menú</a>
+        <a href="http://localhost:4001/admin">📦 Pedidos</a>
+        <a href="http://localhost:4002/admin/pagos.html">💳 Pagos</a>
+        <a href="http://localhost:4004/admin">📅 Reservas</a>
+        <a href="http://localhost:4003/admin/admin.html" class="active">📧 Notificaciones</a>
+      </nav>
+    </div>
+    <div class="user-icon-container">
+      <a href="http://localhost:3000/admin/admin.html" class="user-icon-link">
+        <span class="user-icon">👤</span>
+        <span>Admin</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 🔹 Contenedor principal -->
+  <div class="container">
+    <h1>📧 Panel de Notificaciones</h1>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <h3>Total Notificaciones</h3>
+        <div class="numero" id="total">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Enviadas</h3>
+        <div class="numero" id="enviadas">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Pendientes</h3>
+        <div class="numero" id="pendientes">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Con Fallo</h3>
+        <div class="numero" id="fallos">0</div>
+      </div>
+    </div>
+
+    <div class="filtros">
+      <input type="text" id="buscarPedido" placeholder="Buscar por ID de pedido...">
+      <select id="filtroEstado">
+        <option value="">Todos los estados</option>
+        <option value="enviada">Enviadas</option>
+        <option value="pendiente">Pendientes</option>
+        <option value="fallo">Con fallo</option>
+      </select>
+      <select id="filtroTipo">
+        <option value="">Todos los tipos</option>
+        <option value="confirmacion">Confirmación</option>
+        <option value="preparacion">Preparación</option>
+        <option value="listo">Listo</option>
+        <option value="entregado">Entregado</option>
+      </select>
+      <button onclick="cargarNotificaciones()">🔍 Filtrar</button>
+      <button onclick="limpiarFiltros()">🔄 Limpiar</button>
+    </div>
+
+    <table id="tablaNotificaciones">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Pedido ID</th>
+          <th>Cliente</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Intentos</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    // Remover el código del sidebar ya que ahora usamos el cabezal
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle) menuToggle.remove();
+    if (sidebar) sidebar.remove();
+  </script>
+</body>
+</html>

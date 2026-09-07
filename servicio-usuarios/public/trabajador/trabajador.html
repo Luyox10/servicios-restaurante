@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Trabajador - La Mamasa</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .login-container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+      margin: 0 auto;
+    }
+    
+    body:has(#headerNav[style*="display: none"]) {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 0;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #28a745;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #218838;
+    }
+    #mensaje {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .nav-header {
+      background-color: #28a745;
+      color: white;
+      padding: 1rem;
+      margin-bottom: 20px;
+    }
+    
+    .nav-header h1 {
+      margin: 0 0 10px 0;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 15px;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      font-size: 14px;
+    }
+    
+    .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .nav-links a.active {
+      background-color: rgba(255, 255, 255, 0.4);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-header" id="headerNav" style="display: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap;">
+      <div>
+        <h1>La Mamasa - Panel Trabajador</h1>
+        <nav class="nav-links">
+          <a href="http://localhost:3000/trabajador/trabajador.html" class="active">👤 Usuarios</a>
+          <a href="http://localhost:4000/trabajador/menu_trabajador.html">🍽️ Menú</a>
+          <a href="http://localhost:4001/trabajador">📦 Pedidos</a>
+          <a href="http://localhost:4002/trabajador/pagos.html">💳 Pagos</a>
+          <a href="http://localhost:4004/trabajador">📅 Reservas</a>
+        </nav>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="trabajadorName" style="color: white; font-weight: 500; margin-right: 10px;"></span>
+        <button id="logoutTrabajadorBtn" style="background: rgba(255, 255, 255, 0.2); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; transition: background-color 0.3s;">
+          🚪 Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="login-container">
+    <h2>Panel del Trabajador</h2>
+    <form id="trabajadorLoginForm">
+      <input type="email" id="correo" placeholder="Correo" required />
+      <input type="password" id="contrasena" placeholder="Contraseña" required />
+      <button type="submit">Ingresar</button>
+    </form>
+    <p id="mensaje"></p>
+  </div>
+
+  <script>
+    const apiBase = "http://localhost:3000/api";
+
+    // Verificar si hay sesión de trabajador al cargar
+    async function verificarSesionTrabajador() {
+      try {
+        // Verificar localStorage primero
+        const trabajadorLocal = localStorage.getItem("trabajador");
+        if (trabajadorLocal) {
+          try {
+            const trabajador = JSON.parse(trabajadorLocal);
+            mostrarHeaderTrabajador(trabajador);
+            return;
+          } catch (e) {
+            localStorage.removeItem("trabajador");
+          }
+        }
+
+        // Verificar cookie
+        const res = await fetch(apiBase + "/sesion/trabajador", {
+          credentials: "include"
+        });
+        const data = await res.json();
+
+        if (data.logueado && data.trabajador) {
+          // Guardar en localStorage
+          localStorage.setItem("trabajador", JSON.stringify(data.trabajador));
+          mostrarHeaderTrabajador(data.trabajador);
+        } else {
+          // No hay sesión, ocultar cabezal y mostrar login
+          document.getElementById("headerNav").style.display = "none";
+          document.querySelector(".login-container").style.display = "block";
+        }
+      } catch (err) {
+        console.error("Error al verificar sesión:", err);
+        document.getElementById("headerNav").style.display = "none";
+        document.querySelector(".login-container").style.display = "block";
+      }
+    }
+
+    function mostrarHeaderTrabajador(trabajador) {
+      const headerNav = document.getElementById("headerNav");
+      const loginContainer = document.querySelector(".login-container");
+      
+      if (headerNav) {
+        headerNav.style.display = "block";
+        const trabajadorName = document.getElementById("trabajadorName");
+        if (trabajadorName && trabajador.nombre) {
+          trabajadorName.textContent = `👤 ${trabajador.nombre}`;
+        }
+      }
+      
+      if (loginContainer) {
+        loginContainer.style.display = "none";
+      }
+    }
+
+    // Cerrar sesión
+    async function cerrarSesionTrabajador() {
+      try {
+        // Limpiar localStorage
+        localStorage.removeItem("trabajador");
+        
+        // Limpiar cookie en el servidor
+        await fetch(apiBase + "/logout/trabajador", {
+          method: "POST",
+          credentials: "include"
+        });
+        
+        // Redirigir al login
+        window.location.href = "http://localhost:3000/trabajador/trabajador.html";
+      } catch (err) {
+        console.error("Error al cerrar sesión:", err);
+        // Aún así, limpiar y redirigir
+        localStorage.removeItem("trabajador");
+        window.location.href = "http://localhost:3000/trabajador/trabajador.html";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      verificarSesionTrabajador();
+      
+      // Botón cerrar sesión
+      const logoutBtn = document.getElementById("logoutTrabajadorBtn");
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", cerrarSesionTrabajador);
+        logoutBtn.addEventListener("mouseenter", function() {
+          this.style.background = "rgba(255, 255, 255, 0.3)";
+        });
+        logoutBtn.addEventListener("mouseleave", function() {
+          this.style.background = "rgba(255, 255, 255, 0.2)";
+        });
+      }
+    });
+
+    document.getElementById("trabajadorLoginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const correo = document.getElementById("correo").value.trim();
+      const contrasena = document.getElementById("contrasena").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      try {
+        const res = await fetch(apiBase + "/login/trabajador", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ correo, contrasena }),
+          credentials: "include",
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.logueado) {
+          // Guardar en localStorage
+          if (data.trabajador) {
+            localStorage.setItem("trabajador", JSON.stringify(data.trabajador));
+          }
+          
+          msg.textContent = "✅ Bienvenido trabajador";
+          msg.style.color = "green";
+
+          // Mostrar mensaje de éxito por 2 segundos antes de redirigir
+          setTimeout(() => {
+            window.location.href = "http://localhost:4000/trabajador/menu_trabajador.html";
+          }, 2000);
+        } else {
+          msg.textContent = data.error || "❌ Error en el inicio de sesión";
+          msg.style.color = "red";
+        }
+      } catch (err) {
+        msg.textContent = "❌ Error al conectar con el servidor";
+        msg.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
+
